@@ -6,7 +6,7 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 COPY src/ApiGateway/HybridShop.ApiGateway.csproj src/ApiGateway/
-COPY src/Services.Auth/HybridShop.Services.Auth.csproj src/Services.Auth/
+COPY src/Services.Auth/HybridShop.Services.Auth.Api/HybridShop.Services.Auth.Api.csproj src/Services.Auth/HybridShop.Services.Auth.Api/
 COPY src/Services.Product/HybridShop.Services.Product.csproj src/Services.Product/
 COPY src/Services.Order/HybridShop.Services.Order.csproj src/Services.Order/
 COPY src/Services.Notification/HybridShop.Services.Notification.csproj src/Services.Notification/
