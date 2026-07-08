@@ -9,7 +9,6 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-
 app.MapGet("/test", () => Results.Ok("Działa z Auth Service przez Gateway!"));
 
 app.Run();
