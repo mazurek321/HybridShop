@@ -30,3 +30,14 @@ Wszystkie mikroserwisy wewnątrz kontenerów uruchamiają się domyślnie na por
 | http://localhost:5000/api/orders/{..} | http://order-service:8080/{..} | app.MapGet("/{..}") |
 | http://localhost:5000/api/notifications/{..} | http://notification-service:8080/{..} | app.MapGet("/{..}") |
 
+
+
+## Migracje dla Service.Auth
+folder: HybridShop.Services.Auth
+dotnet ef migrations add InitialPostgresAuthDb -s HybridShop.Services.Auth.Api/HybridShop.Services.Auth.Api.csproj -p HybridShop.Services.Auth.Infrastructure/HybridShop.Services.Auth.Infrastructure.csproj
+
+Infrastructure
+dotnet ef database update --startup-project ../HybridShop.Services.Auth.Api/
+
+## logs:
+docker compose logs -f

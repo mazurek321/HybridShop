@@ -1,0 +1,16 @@
+C:\Users\mazur\Desktop\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Application\obj\Debug\net10.0\HybridShop.Services.Auth.Application.csproj.AssemblyReference.cache
+C:\Users\mazur\Desktop\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Application\obj\Debug\net10.0\HybridShop.Services.Auth.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\mazur\Desktop\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Application\obj\Debug\net10.0\HybridShop.Services.Auth.Application.AssemblyInfoInputs.cache
+C:\Users\mazur\Desktop\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Application\obj\Debug\net10.0\HybridShop.Services.Auth.Application.AssemblyInfo.cs
+C:\Users\mazur\Desktop\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Application\obj\Debug\net10.0\HybridShop.Services.Auth.Application.csproj.CoreCompileInputs.cache
+C:\Users\mazur\Desktop\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Application\obj\Debug\net10.0\HybridShop.Services.Auth.Application.sourcelink.json
+C:\Users\mazur\Desktop\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Application\bin\Debug\net10.0\HybridShop.Services.Auth.Application.deps.json
+C:\Users\mazur\Desktop\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Application\bin\Debug\net10.0\HybridShop.Services.Auth.Application.dll
+C:\Users\mazur\Desktop\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Application\bin\Debug\net10.0\HybridShop.Services.Auth.Application.pdb
+C:\Users\mazur\Desktop\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Application\bin\Debug\net10.0\HybridShop.Services.Auth.Core.dll
+C:\Users\mazur\Desktop\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Application\bin\Debug\net10.0\HybridShop.Services.Auth.Core.pdb
+C:\Users\mazur\Desktop\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Application\obj\Debug\net10.0\HybridSh.23E9DF9E.Up2Date
+C:\Users\mazur\Desktop\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Application\obj\Debug\net10.0\HybridShop.Services.Auth.Application.dll
+C:\Users\mazur\Desktop\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Application\obj\Debug\net10.0\refint\HybridShop.Services.Auth.Application.dll
+C:\Users\mazur\Desktop\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Application\obj\Debug\net10.0\HybridShop.Services.Auth.Application.pdb
+C:\Users\mazur\Desktop\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Application\obj\Debug\net10.0\ref\HybridShop.Services.Auth.Application.dll
