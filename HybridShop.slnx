@@ -1,12 +1,26 @@
 <Solution>
   <Folder Name="/src/" />
+  
   <Folder Name="/src/ApiGateway/">
     <Project Path="src/ApiGateway/HybridShop.ApiGateway.csproj" />
   </Folder>
+
   <Folder Name="/src/Services.Auth/">
-    <Project Path="src/Services.Auth/HybridShop.Services.Auth.csproj" />
+    <Project Path="src/Services.Auth/HybridShop.Services.Auth.Api/HybridShop.Services.Auth.Api.csproj" />
+    <Project Path="src/Services.Auth/HybridShop.Services.Auth.Application/HybridShop.Services.Auth.Application.csproj" />
+    <Project Path="src/Services.Auth/HybridShop.Services.Auth.Core/HybridShop.Services.Auth.Core.csproj" />
+    <Project Path="src/Services.Auth/HybridShop.Services.Auth.Infrastructure/HybridShop.Services.Auth.Infrastructure.csproj" />
   </Folder>
+
   <Folder Name="/src/Services.Product/">
     <Project Path="src/Services.Product/HybridShop.Services.Product.csproj" />
+  </Folder>
+
+  <Folder Name="/src/Services.Notification/">
+    <Project Path="src/Services.Notification/HybridShop.Services.Notification.csproj" />
+  </Folder>
+
+  <Folder Name="/src/Services.Order/">
+    <Project Path="src/Services.Order/HybridShop.Services.Order.csproj" />
   </Folder>
 </Solution>
