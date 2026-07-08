@@ -4,12 +4,7 @@
     <Project Path="src/ApiGateway/HybridShop.ApiGateway.csproj" />
   </Folder>
   <Folder Name="/src/Services.Auth/">
-    <Project Path="src/Services.Auth/HybridShop.Services.Auth.Application/HybridShop.Services.Auth.Application.csproj" />
-    <Project Path="src/Services.Auth/HybridShop.Services.Auth.Core/HybridShop.Services.Auth.Core.csproj" />
-    <Project Path="src/Services.Auth/HybridShop.Services.Auth.Infrastructure/HybridShop.Services.Auth.Infrastructure.csproj" />
-  </Folder>
-  <Folder Name="/src/Services.Auth/HybridShop.Services.Auth.Api/">
-    <Project Path="src/Services.Auth/HybridShop.Services.Auth.Api/HybridShop.Services.Auth.csproj" />
+    <Project Path="src/Services.Auth/HybridShop.Services.Auth.csproj" />
   </Folder>
   <Folder Name="/src/Services.Product/">
     <Project Path="src/Services.Product/HybridShop.Services.Product.csproj" />
