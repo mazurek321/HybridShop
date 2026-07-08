@@ -1,0 +1,43 @@
+{
+  "version": 2,
+  "dgSpecHash": "yfGH1RH/8m8=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Order\\HybridShop.Services.Order.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\mazur\\.nuget\\packages\\masstransit\\9.1.2\\masstransit.9.1.2.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\masstransit.abstractions\\9.1.2\\masstransit.abstractions.9.1.2.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\masstransit.rabbitmq\\9.1.2\\masstransit.rabbitmq.9.1.2.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.9\\microsoft.aspnetcore.openapi.10.0.9.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.1.0\\microsoft.bcl.asyncinterfaces.1.1.0.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\microsoft.entityframeworkcore\\10.0.4\\microsoft.entityframeworkcore.10.0.4.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\10.0.4\\microsoft.entityframeworkcore.abstractions.10.0.4.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\10.0.4\\microsoft.entityframeworkcore.analyzers.10.0.4.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\10.0.4\\microsoft.entityframeworkcore.relational.10.0.4.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\microsoft.netcore.platforms\\2.0.0\\microsoft.netcore.platforms.2.0.0.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\microsoft.openapi\\2.0.0\\microsoft.openapi.2.0.0.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\npgsql\\10.0.3\\npgsql.10.0.3.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\npgsql.entityframeworkcore.postgresql\\10.0.2\\npgsql.entityframeworkcore.postgresql.10.0.2.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\pipelines.sockets.unofficial\\1.0.7\\pipelines.sockets.unofficial.1.0.7.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\rabbitmq.client\\7.2.1\\rabbitmq.client.7.2.1.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\redlock.net\\2.3.2\\redlock.net.2.3.2.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\stackexchange.redis\\2.0.513\\stackexchange.redis.2.0.513.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\system.configuration.configurationmanager\\4.5.0\\system.configuration.configurationmanager.4.5.0.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\system.diagnostics.performancecounter\\4.5.0\\system.diagnostics.performancecounter.4.5.0.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\system.security.cryptography.protecteddata\\4.5.0\\system.security.cryptography.protecteddata.4.5.0.nupkg.sha512",
+    "C:\\Users\\mazur\\.nuget\\packages\\system.security.permissions\\4.5.0\\system.security.permissions.4.5.0.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'Microsoft.OpenApi' 2.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-v5pm-xwqc-g5wc",
+      "projectPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Order\\HybridShop.Services.Order.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Order\\HybridShop.Services.Order.csproj",
+      "libraryId": "Microsoft.OpenApi",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    }
+  ]
+}

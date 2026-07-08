@@ -1,0 +1,6 @@
+@HybridShop.Services.Product_HostAddress = http://localhost:5216
+
+GET {{HybridShop.Services.Product_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

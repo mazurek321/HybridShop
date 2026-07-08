@@ -1,0 +1,101 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: hybridshop-postgres
+    environment:
+      POSTGRES_USER: shopuser
+      POSTGRES_PASSWORD: shoppassword
+      POSTGRES_DB: HybridShopDb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo:latest
+    container_name: hybridshop-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:alpine
+    container_name: hybridshop-redis
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: hybridshop-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  api-gateway:
+    image: hybridshop-gateway
+    container_name: hybridshop-gateway
+    build:
+      context: .
+      dockerfile: src/ApiGateway/Dockerfile
+    ports:
+      - "5000:8080"
+    depends_on:
+      - auth-service
+      - product-service
+      - order-service
+
+  auth-service:
+    image: hybridshop-auth
+    container_name: hybridshop-auth
+    build:
+      context: .
+      dockerfile: src/Services.Auth/Dockerfile
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=HybridShopDb;Username=shopuser;Password=shoppassword
+      - EventBus__HostName=rabbitmq
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  product-service:
+    image: hybridshop-product
+    container_name: hybridshop-product
+    build:
+      context: .
+      dockerfile: src/Services.Product/Dockerfile
+    environment:
+      - DatabaseSettings__ConnectionString=mongodb://mongo:27017
+      - DatabaseSettings__DatabaseName=ProductDb
+      - ConnectionStrings__Redis=redis:6379
+    depends_on:
+      - mongo
+      - redis
+
+  order-service:
+    image: hybridshop-order
+    container_name: hybridshop-order
+    build:
+      context: .
+      dockerfile: src/Services.Order/Dockerfile
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=HybridShopDb;Username=shopuser;Password=shoppassword
+      - EventBus__HostName=rabbitmq
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  notification-service:
+    image: hybridshop-notification
+    container_name: hybridshop-notification
+    build:
+      context: .
+      dockerfile: src/Services.Notification/Dockerfile
+    environment:
+      - EventBus__HostName=rabbitmq
+    depends_on:
+      - rabbitmq
+
+volumes:
+  postgres_data:
+  mongo_data:
