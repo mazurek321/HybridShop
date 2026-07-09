@@ -1,4 +1,3 @@
-using HybridShop.Services.Auth.Application.Interfaces;
 using HybridShop.Services.Auth.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,7 +9,6 @@ public static class DependencyInjection
     {
         services.AddScoped<TokenService>();
         services.AddScoped<AuthService>();
-        services.AddScoped<IUserContext, UserContext>();
         services.AddScoped<UserService>();
         return services;
     }

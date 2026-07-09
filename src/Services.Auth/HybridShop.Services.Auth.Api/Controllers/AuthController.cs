@@ -1,9 +1,8 @@
 using HybridShop.Services.Auth.Application.Services;
 using HybridShop.Services.Auth.Application.Dto;
-using HybridShop.Services.Auth.Core.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using HybridShop.Services.Auth.Application.Interfaces;
+using BuildingBlocks.OpenApi.Context;
 
 
 namespace HybridShop.Services.Auth.Api.Controllers;

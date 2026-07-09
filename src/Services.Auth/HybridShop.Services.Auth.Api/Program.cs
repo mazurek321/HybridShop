@@ -1,10 +1,11 @@
 using HybridShop.Services.Auth.Api.Extensions;
 using HybridShop.Services.Auth.Application;
 using HybridShop.Services.Auth.Infrastructure;
+using HybridShop.BuildingBlocks.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddApiServices();
+builder.Services.AddSharedOpenApi();
 builder.Services.AddAuthServices(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -19,12 +20,6 @@ builder.Services.AddControllers()
 var app = builder.Build();
 
 app.MapOpenApi("/api/auth/openapi/{documentName}.json");
-
-app.UseSwaggerUI(options =>
-{
-    options.SwaggerEndpoint("/api/auth/openapi/v1.json", "HybridShop Auth API v1");
-    options.RoutePrefix = "swagger"; 
-});
 
 app.UseAuthentication();
 app.UseAuthorization();

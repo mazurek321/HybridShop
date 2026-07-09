@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/BuildingBlocks/">
+    <Project Path="BuildingBlocks/OpenApi/OpenApi.csproj" />
+  </Folder>
   <Folder Name="/src/" />
   
   <Folder Name="/src/ApiGateway/">
@@ -13,7 +16,10 @@
   </Folder>
 
   <Folder Name="/src/Services.Product/">
-    <Project Path="src/Services.Product/HybridShop.Services.Product.csproj" />
+    <Project Path="src/Services.Product/HybridShop.Services.Product.Api/HybridShop.Services.Product.Api.csproj" />
+    <Project Path="src/Services.Product/HybridShop.Services.Product.Application/HybridShop.Services.Product.Application.csproj" />
+    <Project Path="src/Services.Product/HybridShop.Services.Product.Core/HybridShop.Services.Product.Core.csproj" />
+    <Project Path="src/Services.Product/HybridShop.Services.Product.Infrastructure/HybridShop.Services.Product.Infrastructure.csproj" />
   </Folder>
 
   <Folder Name="/src/Services.Notification/">

@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\HybridShop.Services.Auth.Application\HybridShop.Services.Auth.Application.csproj" />
     <ProjectReference Include="..\HybridShop.Services.Auth.Infrastructure\HybridShop.Services.Auth.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\OpenApi\OpenApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -12,7 +13,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="7.0.0" />
   </ItemGroup>
 
   <PropertyGroup>
