@@ -1,0 +1,16 @@
+E:\projekty\HybridShop\src\Services.Product\HybridShop.Services.Product.Infrastructure\bin\Debug\net10.0\HybridShop.Services.Product.Infrastructure.deps.json
+E:\projekty\HybridShop\src\Services.Product\HybridShop.Services.Product.Infrastructure\bin\Debug\net10.0\HybridShop.Services.Product.Infrastructure.dll
+E:\projekty\HybridShop\src\Services.Product\HybridShop.Services.Product.Infrastructure\bin\Debug\net10.0\HybridShop.Services.Product.Infrastructure.pdb
+E:\projekty\HybridShop\src\Services.Product\HybridShop.Services.Product.Infrastructure\bin\Debug\net10.0\HybridShop.Services.Product.Core.dll
+E:\projekty\HybridShop\src\Services.Product\HybridShop.Services.Product.Infrastructure\bin\Debug\net10.0\HybridShop.Services.Product.Core.pdb
+E:\projekty\HybridShop\src\Services.Product\HybridShop.Services.Product.Infrastructure\obj\Debug\net10.0\HybridShop.Services.Product.Infrastructure.csproj.AssemblyReference.cache
+E:\projekty\HybridShop\src\Services.Product\HybridShop.Services.Product.Infrastructure\obj\Debug\net10.0\HybridShop.Services.Product.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+E:\projekty\HybridShop\src\Services.Product\HybridShop.Services.Product.Infrastructure\obj\Debug\net10.0\HybridShop.Services.Product.Infrastructure.AssemblyInfoInputs.cache
+E:\projekty\HybridShop\src\Services.Product\HybridShop.Services.Product.Infrastructure\obj\Debug\net10.0\HybridShop.Services.Product.Infrastructure.AssemblyInfo.cs
+E:\projekty\HybridShop\src\Services.Product\HybridShop.Services.Product.Infrastructure\obj\Debug\net10.0\HybridShop.Services.Product.Infrastructure.csproj.CoreCompileInputs.cache
+E:\projekty\HybridShop\src\Services.Product\HybridShop.Services.Product.Infrastructure\obj\Debug\net10.0\HybridShop.Services.Product.Infrastructure.sourcelink.json
+E:\projekty\HybridShop\src\Services.Product\HybridShop.Services.Product.Infrastructure\obj\Debug\net10.0\HybridSh.F1E42595.Up2Date
+E:\projekty\HybridShop\src\Services.Product\HybridShop.Services.Product.Infrastructure\obj\Debug\net10.0\HybridShop.Services.Product.Infrastructure.dll
+E:\projekty\HybridShop\src\Services.Product\HybridShop.Services.Product.Infrastructure\obj\Debug\net10.0\refint\HybridShop.Services.Product.Infrastructure.dll
+E:\projekty\HybridShop\src\Services.Product\HybridShop.Services.Product.Infrastructure\obj\Debug\net10.0\HybridShop.Services.Product.Infrastructure.pdb
+E:\projekty\HybridShop\src\Services.Product\HybridShop.Services.Product.Infrastructure\obj\Debug\net10.0\ref\HybridShop.Services.Product.Infrastructure.dll

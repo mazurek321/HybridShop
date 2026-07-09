@@ -54,6 +54,9 @@ services:
     environment:
       - ConnectionStrings__DefaultConnection=Host=postgres;Database=HybridShopDb;Username=shopuser;Password=shoppassword
       - EventBus__HostName=rabbitmq
+      - Jwt__Key=A9AsXt6lkuTFeOyIIaMILs6PJqG7c9ENCsANaKCZ929
+      - Jwt__Issuer=HybridShop.Services.Auth
+      - Jwt__Audience=HybridShop.ApiGateway
     depends_on:
       - postgres
       - rabbitmq
@@ -65,9 +68,12 @@ services:
       context: .
       dockerfile: src/Services.Product/Dockerfile
     environment:
-      - DatabaseSettings__ConnectionString=mongodb://mongo:27017
-      - DatabaseSettings__DatabaseName=ProductDb
+      - MongoSettings__ConnectionString=mongodb://mongo:27017
+      - MongoSettings__DatabaseName=HybridShop_Product
       - ConnectionStrings__Redis=redis:6379
+      - Jwt__Key=A9AsXt6lkuTFeOyIIaMILs6PJqG7c9ENCsANaKCZ929
+      - Jwt__Issuer=HybridShop.Services.Auth
+      - Jwt__Audience=HybridShop.ApiGateway
     depends_on:
       - mongo
       - redis
