@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "0YqTwtN4+7k=",
+  "dgSpecHash": "whTeJyuLeQ0=",
   "success": true,
-  "projectFilePath": "C:\\Users\\mazur\\Desktop\\HybridShop\\BuildingBlocks\\EventBus\\HybridShop.BuildingBlocks.EventBus.csproj",
+  "projectFilePath": "E:\\projekty\\HybridShop\\BuildingBlocks\\EventBus\\HybridShop.BuildingBlocks.EventBus.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mazur\\.nuget\\packages\\masstransit\\9.1.2\\masstransit.9.1.2.nupkg.sha512",
     "C:\\Users\\mazur\\.nuget\\packages\\masstransit.abstractions\\9.1.2\\masstransit.abstractions.9.1.2.nupkg.sha512",

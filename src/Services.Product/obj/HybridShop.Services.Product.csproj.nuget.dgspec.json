@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Product\\HybridShop.Services.Product.csproj": {}
+    "E:\\projekty\\HybridShop\\src\\Services.Product\\HybridShop.Services.Product.csproj": {}
   },
   "projects": {
-    "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Product\\HybridShop.Services.Product.csproj": {
+    "E:\\projekty\\HybridShop\\src\\Services.Product\\HybridShop.Services.Product.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Product\\HybridShop.Services.Product.csproj",
+        "projectUniqueName": "E:\\projekty\\HybridShop\\src\\Services.Product\\HybridShop.Services.Product.csproj",
         "projectName": "HybridShop.Services.Product",
-        "projectPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Product\\HybridShop.Services.Product.csproj",
+        "projectPath": "E:\\projekty\\HybridShop\\src\\Services.Product\\HybridShop.Services.Product.csproj",
         "packagesPath": "C:\\Users\\mazur\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Product\\obj\\",
+        "outputPath": "E:\\projekty\\HybridShop\\src\\Services.Product\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\mazur\\AppData\\Roaming\\NuGet\\NuGet.Config"

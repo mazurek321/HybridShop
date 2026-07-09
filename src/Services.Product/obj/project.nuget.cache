@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "TEZjD4lxHcw=",
+  "dgSpecHash": "n4OtpPh4Lrc=",
   "success": true,
-  "projectFilePath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Product\\HybridShop.Services.Product.csproj",
+  "projectFilePath": "E:\\projekty\\HybridShop\\src\\Services.Product\\HybridShop.Services.Product.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mazur\\.nuget\\packages\\chillicream.nitro.app\\31.0.2\\chillicream.nitro.app.31.0.2.nupkg.sha512",
     "C:\\Users\\mazur\\.nuget\\packages\\dnsclient\\1.6.1\\dnsclient.1.6.1.nupkg.sha512",
@@ -68,9 +68,9 @@
       "code": "NU1903",
       "level": "Warning",
       "message": "Package 'Microsoft.OpenApi' 2.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-v5pm-xwqc-g5wc",
-      "projectPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Product\\HybridShop.Services.Product.csproj",
+      "projectPath": "E:\\projekty\\HybridShop\\src\\Services.Product\\HybridShop.Services.Product.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Product\\HybridShop.Services.Product.csproj",
+      "filePath": "E:\\projekty\\HybridShop\\src\\Services.Product\\HybridShop.Services.Product.csproj",
       "libraryId": "Microsoft.OpenApi",
       "targetGraphs": [
         "net10.0"

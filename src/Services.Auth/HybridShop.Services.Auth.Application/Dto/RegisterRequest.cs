@@ -8,6 +8,5 @@ public record RegisterRequest(
     string Name, 
     string Lastname, 
     char Gender, 
-    UserRole Role, 
     DateOnly Birthday
 );

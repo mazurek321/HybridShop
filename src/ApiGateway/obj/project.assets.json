@@ -180,11 +180,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\ApiGateway\\HybridShop.ApiGateway.csproj",
+      "projectUniqueName": "E:\\projekty\\HybridShop\\src\\ApiGateway\\HybridShop.ApiGateway.csproj",
       "projectName": "HybridShop.ApiGateway",
-      "projectPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\ApiGateway\\HybridShop.ApiGateway.csproj",
+      "projectPath": "E:\\projekty\\HybridShop\\src\\ApiGateway\\HybridShop.ApiGateway.csproj",
       "packagesPath": "C:\\Users\\mazur\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\ApiGateway\\obj\\",
+      "outputPath": "E:\\projekty\\HybridShop\\src\\ApiGateway\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\mazur\\AppData\\Roaming\\NuGet\\NuGet.Config"

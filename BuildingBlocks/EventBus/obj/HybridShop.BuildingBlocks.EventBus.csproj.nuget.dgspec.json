@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\mazur\\Desktop\\HybridShop\\BuildingBlocks\\EventBus\\HybridShop.BuildingBlocks.EventBus.csproj": {}
+    "E:\\projekty\\HybridShop\\BuildingBlocks\\EventBus\\HybridShop.BuildingBlocks.EventBus.csproj": {}
   },
   "projects": {
-    "C:\\Users\\mazur\\Desktop\\HybridShop\\BuildingBlocks\\EventBus\\HybridShop.BuildingBlocks.EventBus.csproj": {
+    "E:\\projekty\\HybridShop\\BuildingBlocks\\EventBus\\HybridShop.BuildingBlocks.EventBus.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\mazur\\Desktop\\HybridShop\\BuildingBlocks\\EventBus\\HybridShop.BuildingBlocks.EventBus.csproj",
+        "projectUniqueName": "E:\\projekty\\HybridShop\\BuildingBlocks\\EventBus\\HybridShop.BuildingBlocks.EventBus.csproj",
         "projectName": "HybridShop.BuildingBlocks.EventBus",
-        "projectPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\BuildingBlocks\\EventBus\\HybridShop.BuildingBlocks.EventBus.csproj",
+        "projectPath": "E:\\projekty\\HybridShop\\BuildingBlocks\\EventBus\\HybridShop.BuildingBlocks.EventBus.csproj",
         "packagesPath": "C:\\Users\\mazur\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\BuildingBlocks\\EventBus\\obj\\",
+        "outputPath": "E:\\projekty\\HybridShop\\BuildingBlocks\\EventBus\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\mazur\\AppData\\Roaming\\NuGet\\NuGet.Config"

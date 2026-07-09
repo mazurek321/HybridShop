@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "yfGH1RH/8m8=",
+  "dgSpecHash": "irj7KjXgsw8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Order\\HybridShop.Services.Order.csproj",
+  "projectFilePath": "E:\\projekty\\HybridShop\\src\\Services.Order\\HybridShop.Services.Order.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mazur\\.nuget\\packages\\masstransit\\9.1.2\\masstransit.9.1.2.nupkg.sha512",
     "C:\\Users\\mazur\\.nuget\\packages\\masstransit.abstractions\\9.1.2\\masstransit.abstractions.9.1.2.nupkg.sha512",
@@ -31,9 +31,9 @@
       "code": "NU1903",
       "level": "Warning",
       "message": "Package 'Microsoft.OpenApi' 2.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-v5pm-xwqc-g5wc",
-      "projectPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Order\\HybridShop.Services.Order.csproj",
+      "projectPath": "E:\\projekty\\HybridShop\\src\\Services.Order\\HybridShop.Services.Order.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Order\\HybridShop.Services.Order.csproj",
+      "filePath": "E:\\projekty\\HybridShop\\src\\Services.Order\\HybridShop.Services.Order.csproj",
       "libraryId": "Microsoft.OpenApi",
       "targetGraphs": [
         "net10.0"

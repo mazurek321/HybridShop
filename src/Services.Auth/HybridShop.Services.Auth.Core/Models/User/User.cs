@@ -45,11 +45,10 @@ public class User
         string name, 
         string lastname, 
         char gender, 
-        UserRole role, 
         DateOnly birthday
     )
     {
-        return new User(Guid.NewGuid(), email, passwordHash, name, lastname, gender, role, birthday, DateTime.UtcNow);
+        return new User(Guid.NewGuid(), email, passwordHash, name, lastname, gender, UserRole.User, birthday, DateTime.UtcNow);
     }
 
     public void AddRefreshToken(string token, TimeSpan lifetime)

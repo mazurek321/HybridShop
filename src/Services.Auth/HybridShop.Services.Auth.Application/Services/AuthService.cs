@@ -32,7 +32,6 @@ public class AuthService
             request.Name,
             request.Lastname,
             request.Gender,
-            request.Role,
             request.Birthday
         );
 
