@@ -682,22 +682,6 @@
           }
         }
       },
-      "Swashbuckle.AspNetCore.SwaggerUI/7.0.0": {
-        "type": "package",
-        "compile": {
-          "lib/net9.0/Swashbuckle.AspNetCore.SwaggerUI.dll": {
-            "related": ".pdb;.xml"
-          }
-        },
-        "runtime": {
-          "lib/net9.0/Swashbuckle.AspNetCore.SwaggerUI.dll": {
-            "related": ".pdb;.xml"
-          }
-        },
-        "frameworkReferences": [
-          "Microsoft.AspNetCore.App"
-        ]
-      },
       "System.CodeDom/6.0.0": {
         "type": "package",
         "compile": {
@@ -882,6 +866,20 @@
         },
         "runtime": {
           "bin/placeholder/HybridShop.Services.Auth.Infrastructure.dll": {}
+        }
+      },
+      "OpenApi/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.9",
+          "Microsoft.AspNetCore.OpenApi": "10.0.9"
+        },
+        "compile": {
+          "bin/placeholder/OpenApi.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/OpenApi.dll": {}
         }
       }
     }
@@ -2448,30 +2446,6 @@
         "postgresql.png"
       ]
     },
-    "Swashbuckle.AspNetCore.SwaggerUI/7.0.0": {
-      "sha512": "rJJony+jsxvpfJM9ZGVxjp0DVpalZv8cAhiMSLW6L2hgUWb7k5qPVuzQHWXtkT8lrG1hQ8vWeR+HUwgCQm9J3A==",
-      "type": "package",
-      "path": "swashbuckle.aspnetcore.swaggerui/7.0.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "lib/net6.0/Swashbuckle.AspNetCore.SwaggerUI.dll",
-        "lib/net6.0/Swashbuckle.AspNetCore.SwaggerUI.pdb",
-        "lib/net6.0/Swashbuckle.AspNetCore.SwaggerUI.xml",
-        "lib/net8.0/Swashbuckle.AspNetCore.SwaggerUI.dll",
-        "lib/net8.0/Swashbuckle.AspNetCore.SwaggerUI.pdb",
-        "lib/net8.0/Swashbuckle.AspNetCore.SwaggerUI.xml",
-        "lib/net9.0/Swashbuckle.AspNetCore.SwaggerUI.dll",
-        "lib/net9.0/Swashbuckle.AspNetCore.SwaggerUI.pdb",
-        "lib/net9.0/Swashbuckle.AspNetCore.SwaggerUI.xml",
-        "lib/netstandard2.0/Swashbuckle.AspNetCore.SwaggerUI.dll",
-        "lib/netstandard2.0/Swashbuckle.AspNetCore.SwaggerUI.pdb",
-        "lib/netstandard2.0/Swashbuckle.AspNetCore.SwaggerUI.xml",
-        "package-readme.md",
-        "swashbuckle.aspnetcore.swaggerui.7.0.0.nupkg.sha512",
-        "swashbuckle.aspnetcore.swaggerui.nuspec"
-      ]
-    },
     "System.CodeDom/6.0.0": {
       "sha512": "CPc6tWO1LAer3IzfZufDBRL+UZQcj5uS207NHALQzP84Vp/z6wF0Aa0YZImOQY8iStY0A2zI/e3ihKNPfUm8XA==",
       "type": "package",
@@ -2698,6 +2672,11 @@
       "type": "project",
       "path": "../HybridShop.Services.Auth.Infrastructure/HybridShop.Services.Auth.Infrastructure.csproj",
       "msbuildProject": "../HybridShop.Services.Auth.Infrastructure/HybridShop.Services.Auth.Infrastructure.csproj"
+    },
+    "OpenApi/1.0.0": {
+      "type": "project",
+      "path": "../../../BuildingBlocks/OpenApi/OpenApi.csproj",
+      "msbuildProject": "../../../BuildingBlocks/OpenApi/OpenApi.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -2707,7 +2686,7 @@
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 10.0.9",
       "Microsoft.AspNetCore.OpenApi >= 10.0.9",
       "Microsoft.EntityFrameworkCore.Design >= 10.0.9",
-      "Swashbuckle.AspNetCore.SwaggerUI >= 7.0.0"
+      "OpenApi >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -2736,6 +2715,9 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
+            "E:\\projekty\\HybridShop\\BuildingBlocks\\OpenApi\\OpenApi.csproj": {
+              "projectPath": "E:\\projekty\\HybridShop\\BuildingBlocks\\OpenApi\\OpenApi.csproj"
+            },
             "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj": {
               "projectPath": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj"
             },
@@ -2775,10 +2757,6 @@
             "suppressParent": "All",
             "target": "Package",
             "version": "[10.0.9, )"
-          },
-          "Swashbuckle.AspNetCore.SwaggerUI": {
-            "target": "Package",
-            "version": "[7.0.0, )"
           }
         },
         "imports": [

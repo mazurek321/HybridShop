@@ -1,7 +1,8 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 
-namespace HybridShop.Services.Auth.Application.Interfaces;
+
+namespace BuildingBlocks.OpenApi.Context;
 
 public class UserContext(IHttpContextAccessor httpContextAccessor) : IUserContext
 {
