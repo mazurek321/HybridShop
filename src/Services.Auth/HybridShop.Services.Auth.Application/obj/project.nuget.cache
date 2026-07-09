@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "6+wL95ylHxI=",
+  "dgSpecHash": "xAS8cKFFlgM=",
   "success": true,
-  "projectFilePath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj",
+  "projectFilePath": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mazur\\.nuget\\packages\\bcrypt.net-next\\4.2.0\\bcrypt.net-next.4.2.0.nupkg.sha512",
     "C:\\Users\\mazur\\.nuget\\packages\\microsoft.bcl.cryptography\\10.0.2\\microsoft.bcl.cryptography.10.0.2.nupkg.sha512",
@@ -18,9 +18,9 @@
       "code": "NU1510",
       "level": "Warning",
       "message": "Element PackageReference Microsoft.Extensions.Identity.Core nie zostanie oczyszczony. Rozważ usunięcie tego pakietu z zależności, ponieważ prawdopodobnie nie jest on potrzebny.",
-      "projectPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj",
+      "projectPath": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj",
+      "filePath": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj",
       "libraryId": "Microsoft.Extensions.Identity.Core",
       "targetGraphs": [
         "net10.0"

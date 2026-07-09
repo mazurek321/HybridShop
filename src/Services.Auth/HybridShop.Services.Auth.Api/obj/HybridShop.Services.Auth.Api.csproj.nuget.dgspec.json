@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Api\\HybridShop.Services.Auth.Api.csproj": {}
+    "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Api\\HybridShop.Services.Auth.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Api\\HybridShop.Services.Auth.Api.csproj": {
+    "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Api\\HybridShop.Services.Auth.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Api\\HybridShop.Services.Auth.Api.csproj",
+        "projectUniqueName": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Api\\HybridShop.Services.Auth.Api.csproj",
         "projectName": "HybridShop.Services.Auth.Api",
-        "projectPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Api\\HybridShop.Services.Auth.Api.csproj",
+        "projectPath": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Api\\HybridShop.Services.Auth.Api.csproj",
         "packagesPath": "C:\\Users\\mazur\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Api\\obj\\",
+        "outputPath": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\mazur\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -27,11 +27,11 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj": {
-                "projectPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj"
+              "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj": {
+                "projectPath": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj"
               },
-              "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Infrastructure\\HybridShop.Services.Auth.Infrastructure.csproj": {
-                "projectPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Infrastructure\\HybridShop.Services.Auth.Infrastructure.csproj"
+              "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Infrastructure\\HybridShop.Services.Auth.Infrastructure.csproj": {
+                "projectPath": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Infrastructure\\HybridShop.Services.Auth.Infrastructure.csproj"
               }
             }
           }
@@ -67,13 +67,9 @@
               "target": "Package",
               "version": "[10.0.9, )"
             },
-            "Swashbuckle.AspNetCore": {
-              "target": "Package",
-              "version": "[10.2.3, )"
-            },
             "Swashbuckle.AspNetCore.SwaggerUI": {
               "target": "Package",
-              "version": "[10.2.3, )"
+              "version": "[7.0.0, )"
             }
           },
           "imports": [
@@ -513,14 +509,14 @@
         }
       }
     },
-    "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj": {
+    "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj",
+        "projectUniqueName": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj",
         "projectName": "HybridShop.Services.Auth.Application",
-        "projectPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj",
+        "projectPath": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\HybridShop.Services.Auth.Application.csproj",
         "packagesPath": "C:\\Users\\mazur\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\obj\\",
+        "outputPath": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Application\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\mazur\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -536,8 +532,8 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Core\\HybridShop.Services.Auth.Core.csproj": {
-                "projectPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Core\\HybridShop.Services.Auth.Core.csproj"
+              "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Core\\HybridShop.Services.Auth.Core.csproj": {
+                "projectPath": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Core\\HybridShop.Services.Auth.Core.csproj"
               }
             }
           }
@@ -1013,14 +1009,14 @@
         }
       }
     },
-    "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Core\\HybridShop.Services.Auth.Core.csproj": {
+    "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Core\\HybridShop.Services.Auth.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Core\\HybridShop.Services.Auth.Core.csproj",
+        "projectUniqueName": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Core\\HybridShop.Services.Auth.Core.csproj",
         "projectName": "HybridShop.Services.Auth.Core",
-        "projectPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Core\\HybridShop.Services.Auth.Core.csproj",
+        "projectPath": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Core\\HybridShop.Services.Auth.Core.csproj",
         "packagesPath": "C:\\Users\\mazur\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Core\\obj\\",
+        "outputPath": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\mazur\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -1348,14 +1344,14 @@
         }
       }
     },
-    "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Infrastructure\\HybridShop.Services.Auth.Infrastructure.csproj": {
+    "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Infrastructure\\HybridShop.Services.Auth.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Infrastructure\\HybridShop.Services.Auth.Infrastructure.csproj",
+        "projectUniqueName": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Infrastructure\\HybridShop.Services.Auth.Infrastructure.csproj",
         "projectName": "HybridShop.Services.Auth.Infrastructure",
-        "projectPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Infrastructure\\HybridShop.Services.Auth.Infrastructure.csproj",
+        "projectPath": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Infrastructure\\HybridShop.Services.Auth.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\mazur\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Infrastructure\\obj\\",
+        "outputPath": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\mazur\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -1371,8 +1367,8 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Core\\HybridShop.Services.Auth.Core.csproj": {
-                "projectPath": "C:\\Users\\mazur\\Desktop\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Core\\HybridShop.Services.Auth.Core.csproj"
+              "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Core\\HybridShop.Services.Auth.Core.csproj": {
+                "projectPath": "E:\\projekty\\HybridShop\\src\\Services.Auth\\HybridShop.Services.Auth.Core\\HybridShop.Services.Auth.Core.csproj"
               }
             }
           }

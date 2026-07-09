@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi;
 
 namespace HybridShop.Services.Auth.Api.Extensions;
@@ -8,28 +9,36 @@ public static class ApiExtensions
     {
         services.AddEndpointsApiExplorer();
 
-        services.AddSwaggerGen(options =>
+        services.AddOpenApi(options =>
         {
-            options.SwaggerDoc("v1", new OpenApiInfo
+            options.AddDocumentTransformer((document, context, cancellationToken) =>
             {
-                Title = "HybridShop Auth API",
-                Version = "v1"
+                document.Servers?.Clear();
+
+                var scheme = new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme,
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header
+                };
+
+                document.Components ??= new OpenApiComponents();
+                document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+                document.Components.SecuritySchemes[JwtBearerDefaults.AuthenticationScheme] = scheme;
+
+                var schemeReference = new OpenApiSecuritySchemeReference(JwtBearerDefaults.AuthenticationScheme, document);
+
+                var requirements = new OpenApiSecurityRequirement
+                {
+                    [schemeReference] = new List<string>()
+                };
+
+                document.Security ??= new List<OpenApiSecurityRequirement>();
+                document.Security.Add(requirements);
+                
+                return Task.CompletedTask;
             });
-
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                Name = "Authorization",
-                Description = "Wpisz token w formacie: Bearer {twój_token}",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer"
-            });
-
-            var requirement = new OpenApiSecurityRequirement();
-            var schemeReference = new OpenApiSecuritySchemeReference("Bearer");
-            requirement.Add(schemeReference, new List<string>());
-
-            options.AddSecurityRequirement(document => requirement);
         });
 
         return services;

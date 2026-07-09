@@ -18,19 +18,13 @@ builder.Services.AddControllers()
 
 var app = builder.Build();
 
-// if (app.Environment.IsDevelopment())
-// {
-    app.UseSwagger(options =>
-    {
-        options.RouteTemplate = "swagger/{documentName}/swagger.json";
-    });
+app.MapOpenApi("/api/auth/openapi/{documentName}.json");
 
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("./v1/swagger.json", "HybridShop Auth API v1");
-        options.RoutePrefix = "swagger"; 
-    });
-// }
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/api/auth/openapi/v1.json", "HybridShop Auth API v1");
+    options.RoutePrefix = "swagger"; 
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
