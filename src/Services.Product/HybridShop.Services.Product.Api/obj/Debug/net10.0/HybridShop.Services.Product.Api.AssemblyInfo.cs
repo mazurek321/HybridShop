@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HybridShop.Services.Product.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b39ecb62629b04bf36663169fdc326d5aa4695c7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ec7c6d3ca57fdc7cec95504c3bc503688ce328e5")]
 [assembly: System.Reflection.AssemblyProductAttribute("HybridShop.Services.Product.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HybridShop.Services.Product.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

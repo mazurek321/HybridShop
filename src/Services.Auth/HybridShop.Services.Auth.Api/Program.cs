@@ -1,7 +1,8 @@
-using HybridShop.Services.Auth.Api.Extensions;
 using HybridShop.Services.Auth.Application;
 using HybridShop.Services.Auth.Infrastructure;
 using HybridShop.BuildingBlocks.OpenApi;
+using HybridShop.BuildingBlocks.OpenApi.Auth;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,6 @@ builder.Services.AddAuthServices(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {

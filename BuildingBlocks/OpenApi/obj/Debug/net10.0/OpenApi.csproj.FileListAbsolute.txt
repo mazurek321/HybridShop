@@ -1,0 +1,13 @@
+E:\projekty\HybridShop\BuildingBlocks\OpenApi\bin\Debug\net10.0\OpenApi.deps.json
+E:\projekty\HybridShop\BuildingBlocks\OpenApi\bin\Debug\net10.0\OpenApi.dll
+E:\projekty\HybridShop\BuildingBlocks\OpenApi\bin\Debug\net10.0\OpenApi.pdb
+E:\projekty\HybridShop\BuildingBlocks\OpenApi\obj\Debug\net10.0\OpenApi.csproj.AssemblyReference.cache
+E:\projekty\HybridShop\BuildingBlocks\OpenApi\obj\Debug\net10.0\OpenApi.GeneratedMSBuildEditorConfig.editorconfig
+E:\projekty\HybridShop\BuildingBlocks\OpenApi\obj\Debug\net10.0\OpenApi.AssemblyInfoInputs.cache
+E:\projekty\HybridShop\BuildingBlocks\OpenApi\obj\Debug\net10.0\OpenApi.AssemblyInfo.cs
+E:\projekty\HybridShop\BuildingBlocks\OpenApi\obj\Debug\net10.0\OpenApi.csproj.CoreCompileInputs.cache
+E:\projekty\HybridShop\BuildingBlocks\OpenApi\obj\Debug\net10.0\OpenApi.sourcelink.json
+E:\projekty\HybridShop\BuildingBlocks\OpenApi\obj\Debug\net10.0\OpenApi.dll
+E:\projekty\HybridShop\BuildingBlocks\OpenApi\obj\Debug\net10.0\refint\OpenApi.dll
+E:\projekty\HybridShop\BuildingBlocks\OpenApi\obj\Debug\net10.0\OpenApi.pdb
+E:\projekty\HybridShop\BuildingBlocks\OpenApi\obj\Debug\net10.0\ref\OpenApi.dll
