@@ -4,6 +4,7 @@ using System.Text;
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using BuildingBlocks.OpenApi.Context;
 
 
 namespace HybridShop.BuildingBlocks.OpenApi.Auth;
@@ -62,6 +63,9 @@ public static class AuthenticationExtensions
                 }
             };
         });
+
+        services.AddHttpContextAccessor();
+        services.AddScoped<IUserContext, UserContext>();
 
         services.AddAuthorization();
         return services;

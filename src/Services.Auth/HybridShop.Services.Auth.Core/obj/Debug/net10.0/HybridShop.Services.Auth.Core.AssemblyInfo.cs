@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HybridShop.Services.Auth.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b39ecb62629b04bf36663169fdc326d5aa4695c7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+180c4180bd497c23e888346fa74cf31a39de054d")]
 [assembly: System.Reflection.AssemblyProductAttribute("HybridShop.Services.Auth.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HybridShop.Services.Auth.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

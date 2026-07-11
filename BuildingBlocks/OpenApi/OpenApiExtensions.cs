@@ -1,4 +1,3 @@
-using BuildingBlocks.OpenApi.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi;
@@ -9,8 +8,6 @@ public static class OpenApiExtensions
 {
     public static IServiceCollection AddSharedOpenApi(this IServiceCollection services)
     {
-        services.AddHttpContextAccessor();
-        services.AddScoped<IUserContext, UserContext>();
 
         services.AddEndpointsApiExplorer();
         services.AddOpenApi(options =>
