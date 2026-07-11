@@ -1,6 +1,7 @@
 using HybridShop.Services.Auth.Application.Dto;
 using HybridShop.Services.Auth.Core.Models;
 using HybridShop.Services.Auth.Core.Interfaces;
+using HybridShop.Services.Auth.Application.Exceptions;
 
 namespace HybridShop.Services.Auth.Application.Services;
 
@@ -22,16 +23,17 @@ public class AuthService
     {
         var exists = await _userRepository.ExistsAsync(request.Email);
         if (exists)
-            throw new InvalidOperationException("Email already exists.");
+            throw new EmailAlreadyExistsException(request.Email);
         
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
+        var userGender = UserGender.FromChar(request.Gender);
 
         var user = User.NewUser(
             request.Email,
             hashedPassword,
             request.Name,
             request.Lastname,
-            request.Gender,
+            userGender,
             request.Birthday
         );
 
@@ -44,7 +46,7 @@ public class AuthService
         var user = await _userRepository.GetByEmailAsync(request.Email);
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash)) 
-            throw new UnauthorizedAccessException();
+            throw new InvalidCredentialsException();
 
         var accessToken = _tokenService.GenerateAccessToken(user);
         var refreshTokenString = _tokenService.GenerateRefreshTokenString();
@@ -61,11 +63,11 @@ public class AuthService
         var user = await _userRepository.GetByRefreshTokenAsync(request.RefreshToken);
 
         if (user == null) 
-            throw new UnauthorizedAccessException();
+            throw new UserNotFoundException();
 
         var activeToken = user.RefreshTokens.FirstOrDefault(t => t.Token == request.RefreshToken);
         if (activeToken == null || !activeToken.IsActive) 
-            throw new UnauthorizedAccessException();
+            throw new InvalidTokenException();
 
         user.RevokeRefreshToken(request.RefreshToken);
 
@@ -84,7 +86,7 @@ public class AuthService
         var user = await _userRepository.GetByIdAsync(userId);
 
         if (user == null) 
-            throw new UnauthorizedAccessException();
+            throw new UserNotFoundException();
 
         user.RevokeAllRefreshTokens();
         

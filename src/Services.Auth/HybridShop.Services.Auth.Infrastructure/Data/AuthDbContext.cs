@@ -35,11 +35,20 @@ public class AuthDbContext : DbContext
                 .HasMaxLength(100);
 
             entity.Property(u => u.Gender)
-                .IsRequired();
+                .HasConversion(
+                    g => g.Value.ToString(),
+                    s => new UserGender((UserGender.UGender)Enum.Parse(typeof(UserGender.UGender), s)) 
+                )
+                .HasColumnName("Gender")
+                .HasMaxLength(1);
 
             entity.Property(u => u.Role)
                 .IsRequired()
-                .HasConversion<string>(); 
+                .HasConversion(
+                    role => role.Value.ToString(), 
+                    value => new UserRole((URole)Enum.Parse(typeof(URole), value)) 
+                )
+                .HasColumnName("Role");
 
             entity.Property(u => u.Birthday)
                 .IsRequired();
@@ -58,7 +67,13 @@ public class AuthDbContext : DbContext
             entity.Navigation(u => u.RefreshTokens)
                 .HasField("_refreshTokens")
                 .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+            entity.Property(u => u.IsDeleted)
+                .IsRequired();
         });
+
+        modelBuilder.Entity<User>()
+            .HasQueryFilter(u => !u.IsDeleted);
 
         modelBuilder.Entity<RefreshToken>(entity =>
         {

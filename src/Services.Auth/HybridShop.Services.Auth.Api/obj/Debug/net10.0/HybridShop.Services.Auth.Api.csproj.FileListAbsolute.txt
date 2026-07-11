@@ -175,7 +175,6 @@ E:\projekty\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Api\bin\Debug\
 E:\projekty\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Api\bin\Debug\net10.0\Newtonsoft.Json.dll
 E:\projekty\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Api\bin\Debug\net10.0\Npgsql.dll
 E:\projekty\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Api\bin\Debug\net10.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
-E:\projekty\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Api\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 E:\projekty\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Api\bin\Debug\net10.0\System.CodeDom.dll
 E:\projekty\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Api\bin\Debug\net10.0\System.Composition.AttributedModel.dll
 E:\projekty\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Api\bin\Debug\net10.0\System.Composition.Convention.dll
@@ -278,3 +277,5 @@ E:\projekty\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Api\obj\Debug\
 E:\projekty\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Api\obj\Debug\net10.0\HybridShop.Services.Auth.Api.pdb
 E:\projekty\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Api\obj\Debug\net10.0\HybridShop.Services.Auth.Api.genruntimeconfig.cache
 E:\projekty\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Api\obj\Debug\net10.0\ref\HybridShop.Services.Auth.Api.dll
+E:\projekty\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Api\bin\Debug\net10.0\OpenApi.dll
+E:\projekty\HybridShop\src\Services.Auth\HybridShop.Services.Auth.Api\bin\Debug\net10.0\OpenApi.pdb
