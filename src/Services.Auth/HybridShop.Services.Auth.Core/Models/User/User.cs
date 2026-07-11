@@ -8,10 +8,11 @@ public class User
         string passwordHash, 
         string name, 
         string lastname, 
-        char gender, 
+        UserGender gender, 
         UserRole role,
         DateOnly birthday,
-        DateTime createdAt
+        DateTime createdAt,
+        bool isDeleted
     )
     {
         Id = id;
@@ -24,17 +25,19 @@ public class User
         Birthday = birthday;
         CreatedAt = createdAt;
         UpdatedAt = createdAt;
+        IsDeleted = isDeleted;
     }
     public Guid Id { get; private set; }
     public string Email { get; private set; } = string.Empty;
     public string PasswordHash { get; private set; } = string.Empty;
     public string Name { get; private set; } = string.Empty;
     public string Lastname { get; private set; } = string.Empty;
-    public char Gender { get; private set; }
+    public UserGender Gender { get; private set; }
     public UserRole Role { get; private set; }
     public DateOnly Birthday { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
+    public bool IsDeleted { get; private set; }
 
     private readonly List<RefreshToken> _refreshTokens = [];
     public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
@@ -44,11 +47,11 @@ public class User
         string passwordHash, 
         string name, 
         string lastname, 
-        char gender, 
+        UserGender gender, 
         DateOnly birthday
     )
     {
-        return new User(Guid.NewGuid(), email, passwordHash, name, lastname, gender, UserRole.User, birthday, DateTime.UtcNow);
+        return new User(Guid.NewGuid(), email, passwordHash, name, lastname, gender, UserRole.User(), birthday, DateTime.UtcNow, false);
     }
 
     public void AddRefreshToken(string token, TimeSpan lifetime)
@@ -77,5 +80,26 @@ public class User
         }
         UpdatedAt = DateTime.UtcNow;
     }
+
+    public void UpdateProfile(
+        string name, 
+        string lastname, 
+        UserGender gender, 
+        DateOnly birthday
+    )
+    {
+        Name = name;
+        Lastname = lastname;
+        Gender = gender;
+        Birthday = birthday;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void DeleteUser()
+    {
+        IsDeleted = true;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
 
 }

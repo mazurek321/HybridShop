@@ -13,7 +13,7 @@
           "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.9",
           "Microsoft.AspNetCore.OpenApi": "10.0.9",
           "Microsoft.EntityFrameworkCore.Design": "10.0.9",
-          "Swashbuckle.AspNetCore.SwaggerUI": "7.0.0"
+          "OpenApi": "1.0.0"
         },
         "runtime": {
           "HybridShop.Services.Auth.Api.dll": {}
@@ -523,14 +523,6 @@
           }
         }
       },
-      "Swashbuckle.AspNetCore.SwaggerUI/7.0.0": {
-        "runtime": {
-          "lib/net9.0/Swashbuckle.AspNetCore.SwaggerUI.dll": {
-            "assemblyVersion": "7.0.0.0",
-            "fileVersion": "7.0.0.854"
-          }
-        }
-      },
       "System.CodeDom/6.0.0": {
         "runtime": {
           "lib/net6.0/System.CodeDom.dll": {
@@ -640,6 +632,18 @@
         },
         "runtime": {
           "HybridShop.Services.Auth.Infrastructure.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "OpenApi/1.0.0": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.9",
+          "Microsoft.AspNetCore.OpenApi": "10.0.9"
+        },
+        "runtime": {
+          "OpenApi.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -849,13 +853,6 @@
       "path": "npgsql.entityframeworkcore.postgresql/10.0.2",
       "hashPath": "npgsql.entityframeworkcore.postgresql.10.0.2.nupkg.sha512"
     },
-    "Swashbuckle.AspNetCore.SwaggerUI/7.0.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-rJJony+jsxvpfJM9ZGVxjp0DVpalZv8cAhiMSLW6L2hgUWb7k5qPVuzQHWXtkT8lrG1hQ8vWeR+HUwgCQm9J3A==",
-      "path": "swashbuckle.aspnetcore.swaggerui/7.0.0",
-      "hashPath": "swashbuckle.aspnetcore.swaggerui.7.0.0.nupkg.sha512"
-    },
     "System.CodeDom/6.0.0": {
       "type": "package",
       "serviceable": true,
@@ -923,6 +920,11 @@
       "sha512": ""
     },
     "HybridShop.Services.Auth.Infrastructure/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "OpenApi/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

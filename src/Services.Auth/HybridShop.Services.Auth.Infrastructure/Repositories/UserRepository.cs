@@ -31,8 +31,25 @@ public class UserRepository : IUserRepository
                 Email = u.Email,
                 Name = u.Name,
                 Lastname = u.Lastname,
-                Gender = u.Gender,
-                Role = u.Role,
+                Gender = u.Gender.Value == UserGender.UGender.M ? 'M' : 'F',
+                Role = u.Role.Value.ToString(),
+                Birthday = u.Birthday
+            })
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<UserDto?> GetDtoByEmailAsync(string email)
+    {
+        return await _dbContext.Users
+            .Where(u => u.Email == email)
+            .Select(u=> new UserDto
+            {
+                Id = u.Id,
+                Email = u.Email,
+                Name = u.Name,
+                Lastname = u.Lastname,
+                Gender = u.Gender.Value == UserGender.UGender.M ? 'M' : 'F',
+                Role = u.Role.Value.ToString(),
                 Birthday = u.Birthday
             })
             .FirstOrDefaultAsync();
@@ -43,6 +60,25 @@ public class UserRepository : IUserRepository
         return await _dbContext.Users
             .Include(u => u.RefreshTokens)
             .FirstOrDefaultAsync(u => u.Email == email);
+    }
+
+    public async Task<ICollection<UserDto>> BrowseDtoUsers(int skip, int take)
+    {
+        return await _dbContext.Users
+            .OrderBy(u => u.Id)
+            .Skip(skip)
+            .Take(take)
+            .Select(u=> new UserDto
+            {
+                Id = u.Id,
+                Email = u.Email,
+                Name = u.Name,
+                Lastname = u.Lastname,
+                Gender = u.Gender.Value == UserGender.UGender.M ? 'M' : 'F',
+                Role = u.Role.Value.ToString(),
+                Birthday = u.Birthday
+            })
+            .ToListAsync();
     }
 
     public async Task<User?> GetByRefreshTokenAsync(string refreshToken)

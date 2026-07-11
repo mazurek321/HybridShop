@@ -3,6 +3,8 @@ using HybridShop.Services.Auth.Application.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using BuildingBlocks.OpenApi.Context;
+using HybridShop.Services.Auth.Application.Exceptions;
+using HybridShop.Services.Auth.Core.Exceptions;
 
 
 namespace HybridShop.Services.Auth.Api.Controllers;
@@ -13,17 +15,14 @@ public class AuthController : ControllerBase
 {
     private readonly IUserContext _context;
     private readonly AuthService _authService;
-    private readonly UserService _userService;
 
     public AuthController(
         IUserContext context,
-        AuthService authService,
-        UserService userService
+        AuthService authService
     )
     {
         _context = context;
         _authService = authService;
-        _userService = userService;
     }
 
     [HttpPost("register")]
@@ -34,9 +33,13 @@ public class AuthController : ControllerBase
             await _authService.RegisterAsync(request);
             return Ok();
         }
-        catch (InvalidOperationException ex)
+        catch (EmailAlreadyExistsException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(new { message = ex.Message });
+        }
+        catch(InvalidGenderException ex)
+        {
+            return BadRequest(new {message = ex.Message });
         }
     }
 
@@ -48,9 +51,9 @@ public class AuthController : ControllerBase
             var response = await _authService.LoginAsync(request);
             return Ok(response);
         }
-        catch (UnauthorizedAccessException)
+        catch (InvalidCredentialsException ex)
         {
-            return Unauthorized();
+            return Unauthorized(new { message = ex.Message });
         }
     }
 
@@ -62,9 +65,13 @@ public class AuthController : ControllerBase
             var response = await _authService.RefreshAsync(request);
             return Ok(response);
         }
-        catch (UnauthorizedAccessException)
+        catch (UserNotFoundException ex)
         {
-            return Unauthorized();
+            return Unauthorized(new { message = ex.Message });
+        }
+        catch(InvalidTokenException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
         }
     }
 
@@ -74,27 +81,13 @@ public class AuthController : ControllerBase
     {
         try
         {
-            await _authService.LogoutAsync(_context.Id);
+            var userId = _context.Id;
+            await _authService.LogoutAsync(userId);
             return Ok();
         }
-        catch (UnauthorizedAccessException)
+        catch (UserNotFoundException ex)
         {
-            return Unauthorized();
-        }
-    }
-
-    [Authorize]
-    [HttpGet("user")]
-    public async Task<IActionResult> GetUserData()
-    {
-        try
-        {
-            var response = await _userService.GetUserDataAsync(_context.Id);
-            return Ok(response);
-        }
-        catch(Exception)
-        {
-            return NotFound();
+            return Unauthorized(new { message = ex.Message });
         }
     }
 }
