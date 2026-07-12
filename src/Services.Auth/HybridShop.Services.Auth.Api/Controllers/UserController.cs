@@ -11,7 +11,7 @@ namespace HybridShop.Services.Auth.Api.Controllers;
 
 [ApiController]
 [Route("api/user")]
-public partial class UserController : ControllerBase
+public class UserController : ControllerBase
 {
     private readonly IUserContext _context;
     private readonly UserService _userService;

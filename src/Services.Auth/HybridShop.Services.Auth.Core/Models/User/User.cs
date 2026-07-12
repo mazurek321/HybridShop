@@ -1,7 +1,12 @@
 namespace HybridShop.Services.Auth.Core.Models;
 public class User
 {
-    public User(){}
+    public User()
+    {
+        Gender = null!;
+        Role = null!;
+
+    }
     private User(
         Guid id, 
         string email, 
@@ -12,7 +17,8 @@ public class User
         UserRole role,
         DateOnly birthday,
         DateTime createdAt,
-        bool isDeleted
+        bool isDeleted,
+        bool isBanned
     )
     {
         Id = id;
@@ -26,6 +32,7 @@ public class User
         CreatedAt = createdAt;
         UpdatedAt = createdAt;
         IsDeleted = isDeleted;
+        IsBanned = isBanned;
     }
     public Guid Id { get; private set; }
     public string Email { get; private set; } = string.Empty;
@@ -38,6 +45,7 @@ public class User
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
     public bool IsDeleted { get; private set; }
+    public bool IsBanned { get; private set; }
 
     private readonly List<RefreshToken> _refreshTokens = [];
     public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
@@ -51,7 +59,7 @@ public class User
         DateOnly birthday
     )
     {
-        return new User(Guid.NewGuid(), email, passwordHash, name, lastname, gender, UserRole.User(), birthday, DateTime.UtcNow, false);
+        return new User(Guid.NewGuid(), email, passwordHash, name, lastname, gender, UserRole.User(), birthday, DateTime.UtcNow, false, false);
     }
 
     public void AddRefreshToken(string token, TimeSpan lifetime)
@@ -101,5 +109,16 @@ public class User
         UpdatedAt = DateTime.UtcNow;
     }
 
+    public void BanUser()
+    {
+        IsBanned = true;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void UnbanUser()
+    {
+        IsBanned = false;
+        UpdatedAt = DateTime.UtcNow;
+    }
 
 }

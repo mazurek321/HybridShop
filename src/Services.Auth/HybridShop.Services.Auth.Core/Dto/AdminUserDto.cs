@@ -1,6 +1,6 @@
 namespace HybridShop.Services.Auth.Application.Dto;
 
-public record UserAdminDto
+public record AdminUserDto
 {
     public Guid Id { get; init; }
     public string Email { get; init; } = string.Empty;
@@ -12,6 +12,7 @@ public record UserAdminDto
     public DateTime CreatedAt { get; init; }
     public DateTime UpdatedAt { get; init; }
     public bool IsDeleted { get; init; }
+    public bool IsBanned { get; init; }
     public ICollection<UserSessionDto> ActiveSessions { get; init; } = [];
 }
 

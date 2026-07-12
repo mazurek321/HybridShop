@@ -77,8 +77,12 @@ namespace HybridShop.Services.Auth.Infrastructure.Migrations
                         .HasColumnType("character varying(1)")
                         .HasColumnName("Gender");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("IsBanned")
                         .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsDeleted");
 
                     b.Property<string>("Lastname")
                         .IsRequired()
@@ -105,7 +109,8 @@ namespace HybridShop.Services.Auth.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("Users", (string)null);
                 });
