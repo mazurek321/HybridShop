@@ -21,9 +21,10 @@ public class AuthDbContext : DbContext
             entity.Property(u => u.Email)
                 .IsRequired()
                 .HasMaxLength(256);
-
+                
             entity.HasIndex(u => u.Email)
-                .IsUnique();
+                .IsUnique()
+                .HasFilter("\"IsDeleted\" = false");
 
             entity.Property(u => u.PasswordHash)
                 .IsRequired();
@@ -69,11 +70,18 @@ public class AuthDbContext : DbContext
                 .UsePropertyAccessMode(PropertyAccessMode.Field);
 
             entity.Property(u => u.IsDeleted)
+                .HasColumnName("IsDeleted")
                 .IsRequired();
+            
+            entity.Property(u => u.IsBanned)
+                .IsRequired();
+
+
+            entity.HasQueryFilter(u => !u.IsDeleted && !u.IsBanned);
         });
 
-        modelBuilder.Entity<User>()
-            .HasQueryFilter(u => !u.IsDeleted);
+
+
 
         modelBuilder.Entity<RefreshToken>(entity =>
         {

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HybridShop.Services.Auth.Infrastructure.Migrations
 {
     [DbContext(typeof(AuthDbContext))]
-    [Migration("20260708115832_InitialPostgresAuthDb")]
+    [Migration("20260712164353_InitialPostgresAuthDb")]
     partial class InitialPostgresAuthDb
     {
         /// <inheritdoc />
@@ -25,31 +25,39 @@ namespace HybridShop.Services.Auth.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("HybridShop.Services.Auth.Core.Entities.RefreshToken", b =>
+            modelBuilder.Entity("HybridShop.Services.Auth.Core.Models.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("IsRevoked")
-                        .HasColumnType("boolean");
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Token")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.ToTable("RefreshTokens");
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
-            modelBuilder.Entity("HybridShop.Services.Auth.Core.Entities.User", b =>
+            modelBuilder.Entity("HybridShop.Services.Auth.Core.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -66,8 +74,18 @@ namespace HybridShop.Services.Auth.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<char>("Gender")
-                        .HasColumnType("character(1)");
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)")
+                        .HasColumnName("Gender");
+
+                    b.Property<bool>("IsBanned")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsDeleted");
 
                     b.Property<string>("Lastname")
                         .IsRequired()
@@ -85,7 +103,8 @@ namespace HybridShop.Services.Auth.Infrastructure.Migrations
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("Role");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -93,9 +112,24 @@ namespace HybridShop.Services.Auth.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("HybridShop.Services.Auth.Core.Models.RefreshToken", b =>
+                {
+                    b.HasOne("HybridShop.Services.Auth.Core.Models.User", null)
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HybridShop.Services.Auth.Core.Models.User", b =>
+                {
+                    b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618
         }
