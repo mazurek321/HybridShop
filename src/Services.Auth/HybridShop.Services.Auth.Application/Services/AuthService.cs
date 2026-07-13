@@ -37,20 +37,34 @@ public class AuthService
             request.Birthday
         );
 
-        await _userRepository.AddAsync(user);
+        _userRepository.Add(user);
         await _userRepository.SaveChangesAsync();
     }
 
     public async Task<AuthResponse> LoginAsync(LoginRequest request)
     {
-        var user = await _userRepository.GetByEmailAsync(request.Email);
+        var user = await _userRepository.GetWithTokensByEmailAsync(request.Email);
 
-        if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash)) 
+        if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash)) 
             throw new InvalidCredentialsException();
+
+        var activeTokens = user.RefreshTokens
+            .Where(t => t.IsActive)
+            .OrderByDescending(t => t.CreatedAt)
+            .ToList();
+
+        if (activeTokens.Count >= 3)
+        {
+            var tokensToRevoke = activeTokens.Skip(2); 
+            foreach (var token in tokensToRevoke)
+            {
+                token.Revoke();
+            }
+        }
 
         var accessToken = _tokenService.GenerateAccessToken(user);
         var refreshTokenString = _tokenService.GenerateRefreshTokenString();
-
+        
         user.AddRefreshToken(refreshTokenString, TimeSpan.FromDays(7));
         
         await _userRepository.SaveChangesAsync();
@@ -62,11 +76,11 @@ public class AuthService
     {
         var user = await _userRepository.GetByRefreshTokenAsync(request.RefreshToken);
 
-        if (user == null) 
+        if (user is null) 
             throw new UserNotFoundException();
 
         var activeToken = user.RefreshTokens.FirstOrDefault(t => t.Token == request.RefreshToken);
-        if (activeToken == null || !activeToken.IsActive) 
+        if (activeToken == null || !activeToken.IsActive || user.IsDeleted) 
             throw new InvalidTokenException();
 
         user.RevokeRefreshToken(request.RefreshToken);
@@ -85,7 +99,7 @@ public class AuthService
     {
         var user = await _userRepository.GetByIdAsync(userId);
 
-        if (user == null) 
+        if (user is null) 
             throw new UserNotFoundException();
 
         user.RevokeAllRefreshTokens();

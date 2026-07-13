@@ -48,7 +48,6 @@ public class UserRepository : IUserRepository
                 ExpiresAt = t.ExpiresAt,
                 IsActive = t.ExpiresAt > DateTime.UtcNow && !t.IsRevoked
             })
-            .ToList()
     };
 
     public UserRepository(AuthDbContext dbContext)
@@ -60,7 +59,6 @@ public class UserRepository : IUserRepository
     {
         return await _dbContext.Users
             .IgnoreQueryFilters()
-            .Include(u => u.RefreshTokens)
             .FirstOrDefaultAsync(u => u.Id == id);
     }
 
@@ -69,6 +67,7 @@ public class UserRepository : IUserRepository
         return await _dbContext.Users
             .Where(u => u.Id == id)
             .Select(MapToUserDto)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
     }
 
@@ -78,6 +77,7 @@ public class UserRepository : IUserRepository
             .IgnoreQueryFilters()
             .Where(u => u.Id == id)
             .Select(MapToAdminUserDto)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
     }
 
@@ -86,6 +86,7 @@ public class UserRepository : IUserRepository
         return await _dbContext.Users
             .Where(u => u.Email == email)
             .Select(MapToUserDto)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
     }
 
@@ -95,6 +96,7 @@ public class UserRepository : IUserRepository
             .IgnoreQueryFilters()
             .Where(u => u.Email == email)
             .Select(MapToAdminUserDto)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
     }
 
@@ -102,6 +104,12 @@ public class UserRepository : IUserRepository
     {
         return await _dbContext.Users
             .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(u => u.Email == email);
+    }
+
+    public async Task<User?> GetWithTokensByEmailAsync(string email)
+    {
+        return await _dbContext.Users
             .Include(u => u.RefreshTokens)
             .FirstOrDefaultAsync(u => u.Email == email);
     }
@@ -122,6 +130,7 @@ public class UserRepository : IUserRepository
             .Skip(skip)
             .Take(take)
             .Select(MapToUserDto)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -133,7 +142,13 @@ public class UserRepository : IUserRepository
             .Skip(skip)
             .Take(take)
             .Select(MapToAdminUserDto)
+            .AsNoTracking()
             .ToListAsync();
+    }
+
+    public void DeleteRefreshToken(RefreshToken token)
+    {
+        _dbContext.Entry(token).State = EntityState.Deleted;
     }
 
     public async Task<bool> ExistsAsync(string email)
@@ -141,15 +156,14 @@ public class UserRepository : IUserRepository
         return await _dbContext.Users.AnyAsync(u => u.Email == email);
     }
 
-    public async Task AddAsync(User user)
+    public void Add(User user)
     {
-        await _dbContext.Users.AddAsync(user);
+        _dbContext.Users.Add(user);
     }
 
-    public Task UpdateAsync(User user)
+    public void Update(User user)
     {
         _dbContext.Users.Update(user);
-        return Task.CompletedTask;
     }
 
     public async Task SaveChangesAsync()

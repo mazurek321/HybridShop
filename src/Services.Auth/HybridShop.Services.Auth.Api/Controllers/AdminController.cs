@@ -49,7 +49,7 @@ public class AdminController : ControllerBase
         }
         catch(InvalidRangeException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return BadRequest(new { message = ex.Message });
         }
     }
 
@@ -64,7 +64,7 @@ public class AdminController : ControllerBase
         }
         catch(InvalidInputDataException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return BadRequest(new { message = ex.Message });
         }
         catch(UserNotFoundException ex)
         {
@@ -83,7 +83,7 @@ public class AdminController : ControllerBase
         }
         catch(InvalidInputDataException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return BadRequest(new { message = ex.Message });
         }
         catch(UserNotFoundException ex)
         {
@@ -102,7 +102,7 @@ public class AdminController : ControllerBase
         }
         catch(UserAlreadyBannedException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return Conflict(new { message = ex.Message });
         }
         catch(UserNotFoundException ex)
         {
@@ -121,7 +121,7 @@ public class AdminController : ControllerBase
         }
         catch(UserIsNotBannedException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return Conflict(new { message = ex.Message });
         }
         catch(UserNotFoundException ex)
         {
