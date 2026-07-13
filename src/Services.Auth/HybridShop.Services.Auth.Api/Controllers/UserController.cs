@@ -94,7 +94,7 @@ public class UserController : ControllerBase
         }
         catch(UserAlreadyDeletedException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return Conflict(new { message = ex.Message });
         }
     }
 

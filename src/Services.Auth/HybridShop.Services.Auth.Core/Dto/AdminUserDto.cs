@@ -13,7 +13,7 @@ public record AdminUserDto
     public DateTime UpdatedAt { get; init; }
     public bool IsDeleted { get; init; }
     public bool IsBanned { get; init; }
-    public ICollection<UserSessionDto> ActiveSessions { get; init; } = [];
+    public IEnumerable<UserSessionDto> ActiveSessions { get; init; } = [];
 }
 
 public record UserSessionDto
