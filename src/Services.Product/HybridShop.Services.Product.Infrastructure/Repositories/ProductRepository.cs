@@ -1,4 +1,4 @@
-using HybridShop.Services.Product.Core.Interface;
+using HybridShop.Services.Product.Core.Interfaces;
 using MongoDB.Driver;
 
 namespace HybridShop.Services.Product.Infrastructure;
@@ -21,5 +21,22 @@ public class ProductRepository : IProductRepository
         return await _dbContext
             .Find(p => p.Id == id && !p.IsDeleted)
             .FirstOrDefaultAsync();
+    }
+
+    public async Task<IEnumerable<Core.Product.Product>> BrowseProductsAsync(int skip, int take)
+    {
+        return await _dbContext.Find(FilterDefinition<Core.Product.Product>.Empty)
+            .Skip(skip)
+            .Limit(take)
+            .ToListAsync();
+    }
+
+    public async Task UpdateAsync(Core.Product.Product product){
+        var filter = Builders<Core.Product.Product>.Filter.Eq(p => p.Id, product.Id);
+        await _dbContext.ReplaceOneAsync(filter, product);
+    }
+    public async Task DeleteAsync(Core.Product.Product product){
+        var filter = Builders<Core.Product.Product>.Filter.Eq(p => p.Id, product.Id);
+        await _dbContext.DeleteOneAsync(filter);
     }
 }

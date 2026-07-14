@@ -60,4 +60,26 @@ public class Product
             Guid.NewGuid(), title, slug, description, price, quantity, ProductStatus.Active(), sellerId, DateTime.UtcNow, false
         );
     }
+
+    public void Update(
+        string title,
+        string slug,
+        string? description,
+        Price price,
+        Quantity quantity
+    )
+    {
+        Title = title;
+        Slug = slug;
+        Description = description;
+        Price = price;
+        Quantity = quantity;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Delete()
+    {
+        IsDeleted = true;
+        UpdatedAt = DateTime.UtcNow;   
+    }
 }

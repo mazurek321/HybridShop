@@ -1,6 +1,8 @@
 using HybridShop.Services.Product.Core.Product;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.IdGenerators;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace HybridShop.Services.Product.Infrastructure;
 
@@ -8,6 +10,9 @@ public static class MongoMapping
 {
     public static void Register()
     {
+        
+        BsonSerializer.TryRegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
+
         BsonClassMap.RegisterClassMap<Core.Product.Product>(cm =>
         {
             cm.AutoMap();

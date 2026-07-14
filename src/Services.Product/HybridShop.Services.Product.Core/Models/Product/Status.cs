@@ -3,6 +3,7 @@ namespace HybridShop.Services.Product.Core.Product;
 public enum PStatus{ Draft, Active, Suspended, Archived }
 public class ProductStatus
 {
+    public ProductStatus(){}
     public ProductStatus(PStatus value)
     {
         if(!Enum.IsDefined<PStatus>(value))
