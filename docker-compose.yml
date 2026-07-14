@@ -74,9 +74,11 @@ services:
       - Jwt__Key=${JWT_KEY}
       - Jwt__Issuer=${JWT_ISSUER}
       - Jwt__Audience=${JWT_AUDIENCE}
+      - InternalServices__AuthGrpcUrl=${InternalServices__AuthGrpcUrl}
     depends_on:
       - mongo
       - redis
+      - auth-service
 
   order-service:
     image: hybridshop-order

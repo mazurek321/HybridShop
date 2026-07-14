@@ -1,6 +1,7 @@
 namespace HybridShop.Services.Product.Core.Product;
 public class Quantity
 {
+    public Quantity(){}
     public Quantity(int value)
     {
         if(value < 0) 

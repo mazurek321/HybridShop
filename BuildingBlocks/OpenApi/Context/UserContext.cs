@@ -20,4 +20,27 @@ public class UserContext(IHttpContextAccessor httpContextAccessor) : IUserContex
             return Guid.Parse(userId);
         }
     }
+
+    public string Role
+    {
+        get
+        {
+            var user = httpContextAccessor.HttpContext?.User;
+            
+            if (user is null || !user.Identity?.IsAuthenticated == true)
+            {
+                throw new UnauthorizedAccessException("User is not authenticated.");
+            }
+
+            var role = user.FindFirst(ClaimTypes.Role)?.Value 
+                       ?? user.FindFirst("role")?.Value;
+
+            if (string.IsNullOrEmpty(role))
+            {
+                throw new UnauthorizedAccessException("User role claim is missing.");
+            }
+
+            return role;
+        }
+    }
 }

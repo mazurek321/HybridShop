@@ -1,6 +1,7 @@
 using HybridShop.Services.Product.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
+
 namespace HybridShop.Services.Product.Application;
 
 public static class DependencyInjection

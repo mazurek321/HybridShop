@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option csharp_namespace = "HybridShop.Grpc";
+
+service UserGrpcService {
+  rpc GetUserDetails (UserRequest) returns (UserResponse);
+}
+
+message UserRequest {
+  string id = 1;
+}
+
+message UserResponse {
+  string id = 1;
+  string email = 2;
+  string name = 3;
+  string lastname = 4;
+}
