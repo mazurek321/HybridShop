@@ -1,0 +1,13 @@
+# Sekrety
+.env
+
+# .NET (pliki kompilacji i tymczasowe)
+bin/
+obj/
+.vs/
+.idea/
+*.user
+*.suo
+
+# Docker
+.dockerignore

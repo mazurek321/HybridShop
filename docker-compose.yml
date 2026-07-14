@@ -3,11 +3,11 @@ services:
     image: postgres:16-alpine
     container_name: hybridshop-postgres
     environment:
-      POSTGRES_USER: shopuser
-      POSTGRES_PASSWORD: shoppassword
-      POSTGRES_DB: HybridShopDb
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5432:5432"
+      - "${PORT_POSTGRES}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -15,7 +15,7 @@ services:
     image: mongo:latest
     container_name: hybridshop-mongo
     ports:
-      - "27017:27017"
+      - "${PORT_MONGO}:27017"
     volumes:
       - mongo_data:/data/db
 
@@ -23,14 +23,14 @@ services:
     image: redis:alpine
     container_name: hybridshop-redis
     ports:
-      - "6379:6379"
+      - "${PORT_REDIS}:6379"
 
   rabbitmq:
     image: rabbitmq:3-management
     container_name: hybridshop-rabbitmq
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "${PORT_RABBITMQ_AMQP}:5672"
+      - "${PORT_RABBITMQ_MGMT}:15672"
 
   api-gateway:
     image: hybridshop-gateway
@@ -39,7 +39,7 @@ services:
       context: .
       dockerfile: src/ApiGateway/Dockerfile
     ports:
-      - "5000:8080"
+      - "${PORT_API_GATEWAY}:8080"
     depends_on:
       - auth-service
       - product-service
@@ -52,11 +52,11 @@ services:
       context: .
       dockerfile: src/Services.Auth/Dockerfile
     environment:
-      - ConnectionStrings__DefaultConnection=Host=postgres;Database=HybridShopDb;Username=shopuser;Password=shoppassword
+      - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
       - EventBus__HostName=rabbitmq
-      - Jwt__Key=A9AsXt6lkuTFeOyIIaMILs6PJqG7c9ENCsANaKCZ929
-      - Jwt__Issuer=HybridShop.Services.Auth
-      - Jwt__Audience=HybridShop.ApiGateway
+      - Jwt__Key=${JWT_KEY}
+      - Jwt__Issuer=${JWT_ISSUER}
+      - Jwt__Audience=${JWT_AUDIENCE}
     depends_on:
       - postgres
       - rabbitmq
@@ -68,12 +68,12 @@ services:
       context: .
       dockerfile: src/Services.Product/Dockerfile
     environment:
-      - MongoSettings__ConnectionString=mongodb://mongo:27017
+      - MongoSettings__ConnectionString=${MONGO_CONNECTION_STRING}
       - MongoSettings__DatabaseName=HybridShop_Product
-      - ConnectionStrings__Redis=redis:6379
-      - Jwt__Key=A9AsXt6lkuTFeOyIIaMILs6PJqG7c9ENCsANaKCZ929
-      - Jwt__Issuer=HybridShop.Services.Auth
-      - Jwt__Audience=HybridShop.ApiGateway
+      - ConnectionStrings__Redis=${REDIS_CONNECTION_STRING}
+      - Jwt__Key=${JWT_KEY}
+      - Jwt__Issuer=${JWT_ISSUER}
+      - Jwt__Audience=${JWT_AUDIENCE}
     depends_on:
       - mongo
       - redis
@@ -85,7 +85,7 @@ services:
       context: .
       dockerfile: src/Services.Order/Dockerfile
     environment:
-      - ConnectionStrings__DefaultConnection=Host=postgres;Database=HybridShopDb;Username=shopuser;Password=shoppassword
+      - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
       - EventBus__HostName=rabbitmq
     depends_on:
       - postgres
