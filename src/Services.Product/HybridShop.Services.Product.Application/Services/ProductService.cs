@@ -1,6 +1,7 @@
 using HybridShop.Services.Product.Application.Dto;
 using HybridShop.Services.Product.Application.Exceptions;
 using HybridShop.Services.Product.Core.Dto;
+using HybridShop.Services.Product.Core.Exceptions;
 using HybridShop.Services.Product.Core.Interfaces;
 using HybridShop.Services.Product.Core.Product;
 
@@ -23,19 +24,29 @@ public class ProductService
     public async Task<Core.Product.Product> AddProductAsync(AddNewProductDto dto, Guid userId)
     {
         var slug = GenerateSlug(dto.Title);
+
+        if (!Enum.TryParse<PCategory>(dto.Category, true, out var parsedCategory))
+            throw new InvalidProductException();
+
+        var domainPrice = new Price(dto.Price);
+        var domainQuantity = new Quantity(dto.Quantity);
+        var domainVariants = MapVariants(dto.Variants);
+
         var product = Core.Product.Product.NewProduct(
             dto.Title,
             slug,
             dto.Description,
-            new Price(dto.Price),
-            new Quantity(dto.Quantity),
-            userId
+            domainPrice,
+            domainQuantity,
+            userId,
+            new ProductCategory(parsedCategory),
+            dto.Attributes,
+            domainVariants
         );
 
         await _productRepository.AddAsync(product);
         return product;
     }
-
 
     public async Task<ProductDto?> GetProductAsync(Guid productId)
     {
@@ -45,48 +56,30 @@ public class ProductService
 
         var seller = await _userServiceClient.GetSellerDetailsAsync(product.SellerId);
 
-        return new ProductDto
-        {
-            Id = product.Id,
-            Title = product.Title,
-            Slug = product.Slug,
-            Description = product.Description!,
-            Price = product.Price.Value,
-            Quantity = product.Quantity.Value,
-            Seller = seller ?? new SellerDto
-            {
-                Id = product.SellerId,
-                Email = "unknown@shop.local",
-                Name = "Nieznany",
-                Lastname = "Sprzedawca"
-            }
-        };
+        return MapToDto(product, seller);
     }
 
-    public async Task<IEnumerable<ProductDto>> BrowseProductsAsync(int skip, int take)
+    public async Task<IEnumerable<ProductDto>> BrowseProductsAsync(BrowseProductsQueryDto query)
     {
-        var products = await _productRepository.BrowseProductsAsync(skip, take);
+        PCategory? parsedCategory = null;
+        if (!string.IsNullOrWhiteSpace(query.Category) && Enum.TryParse<PCategory>(query.Category, true, out var categoryVal))
+        {
+            parsedCategory = categoryVal;
+        }
+
+        var products = await _productRepository.BrowseProductsAsync(
+            query.Skip, 
+            query.Take, 
+            parsedCategory, 
+            query.PriceFrom, 
+            query.PriceTo, 
+            query.Search
+        );
 
         var tasks = products.Select(async product =>
         {
             var seller = await _userServiceClient.GetSellerDetailsAsync(product.SellerId);
-
-            return new ProductDto
-            {
-                Id = product.Id,
-                Title = product.Title,
-                Slug = product.Slug,
-                Description = product.Description ?? string.Empty,
-                Price = product.Price.Value,
-                Quantity = product.Quantity.Value,
-                Seller = seller ?? new SellerDto
-                {
-                    Id = product.SellerId,
-                    Email = "unknown@shop.local",
-                    Name = "Nieznany",
-                    Lastname = "Sprzedawca"
-                }
-            };
+            return MapToDto(product, seller);
         });
 
         return await Task.WhenAll(tasks);
@@ -96,20 +89,29 @@ public class ProductService
     {
         var product = await _productRepository.GetByIdAsync(productId);
 
-        if(product is null)
+        if (product is null)
             throw new ProductNotFoundException();
 
-        if(product.SellerId != userId || role != "Admin")
+        if (product.SellerId != userId && role != "Admin")
             throw new DontHavePermissionsException();
         
+        if (!Enum.TryParse<PCategory>(dto.Category, true, out var parsedCategory))
+            throw new InvalidProductException();
+
+        var domainPrice = new Price(dto.Price);
+        var domainQuantity = new Quantity(dto.Quantity);
+        var domainVariants = MapVariants(dto.Variants);
         var newSlug = GenerateSlug(dto.Title);
 
         product.Update(
             dto.Title,
             newSlug,
             dto.Description,
-            new Price(dto.Price),
-            new Quantity(dto.Quantity)
+            domainPrice,
+            domainQuantity,
+            new ProductCategory(parsedCategory),
+            dto.Attributes,
+            domainVariants
         );
 
         await _productRepository.UpdateAsync(product);
@@ -119,15 +121,54 @@ public class ProductService
     {
         var product = await _productRepository.GetByIdAsync(productId);
 
-        if(product is null)
+        if (product is null)
             throw new ProductNotFoundException();
 
-        if(product.SellerId != userId || role != "Admin")
+        if (product.SellerId != userId && role != "Admin")
             throw new DontHavePermissionsException();
 
         product.Delete();
+        await _productRepository.UpdateAsync(product);
     }
 
+    private static ProductDto MapToDto(Core.Product.Product product, SellerDto? seller)
+    {
+        return new ProductDto
+        {
+            Id = product.Id,
+            Title = product.Title ?? string.Empty,
+            Slug = product.Slug ?? string.Empty,
+            Description = product.Description ?? string.Empty,
+            Price = product.Price?.Value ?? 0, 
+            Quantity = product.Quantity?.Value ?? 0,
+            Category = product.Category?.Value.ToString() ?? string.Empty,
+            Attributes = product.Attributes ?? new Dictionary<string, object>(),
+            Variants = (product.Variants ?? new List<ProductVariant>()).Select(v => new ProductVariantDto
+            {
+                SkuId = v.SkuId,
+                Price = v.Price?.Value ?? 0,
+                Quantity = v.Quantity?.Value ?? 0,
+                Attributes = v.Attributes ?? new Dictionary<string, object>()
+            }).ToList(),
+            Seller = seller ?? new SellerDto
+            {
+                Id = product.SellerId,
+                Email = "unknown@shop.local",
+                Name = "Nieznany",
+                Lastname = "Sprzedawca"
+            },
+            IsDeleted = product.IsDeleted,
+            CreatedAt = product.CreatedAt,
+            UpdatedAt = product.UpdatedAt
+        };
+    }
+
+    private static List<ProductVariant> MapVariants(List<AddProductVariantDto>? dtos)
+    {
+        return dtos is not null && dtos.Any()
+            ? dtos.Select(v => new ProductVariant(Guid.NewGuid(), new Price(v.Price), new Quantity(v.Quantity), v.Attributes)).ToList()
+            : new List<ProductVariant>();
+    }
 
     private static string GenerateSlug(string title)
     {
@@ -151,11 +192,8 @@ public class ProductService
         str = sb.ToString();
 
         str = System.Text.RegularExpressions.Regex.Replace(str, @"\s+", "-");
-
         str = System.Text.RegularExpressions.Regex.Replace(str, @"-+", "-");
 
         return str;
-        
     }
-
 }

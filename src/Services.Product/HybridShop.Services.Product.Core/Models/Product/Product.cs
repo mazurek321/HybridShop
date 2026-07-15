@@ -7,7 +7,11 @@ public class Product
         Price = null!;
         Quantity = null!;
         Status = null!;
+        Category = null!;
+        Attributes = new Dictionary<string, object>();
+        Variants = new List<ProductVariant>();
     }
+
     private Product(
         Guid id,
         string title,
@@ -18,7 +22,10 @@ public class Product
         ProductStatus status,
         Guid sellerId,
         DateTime createdAt,
-        bool isDeleted
+        bool isDeleted,
+        ProductCategory category,
+        Dictionary<string, object>? attributes,
+        List<ProductVariant>? variants
     )
     {
         Id = id;
@@ -32,8 +39,11 @@ public class Product
         CreatedAt = createdAt;
         UpdatedAt = createdAt;
         IsDeleted = isDeleted;
-
+        Category = category;
+        Attributes = attributes ?? new Dictionary<string, object>();
+        Variants = variants ?? new List<ProductVariant>();
     }
+
     public Guid Id { get; private set; }
     public string Title { get; private set; } = string.Empty;
     public string Slug { get; private set; } = string.Empty;
@@ -45,7 +55,9 @@ public class Product
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
     public bool IsDeleted { get; private set; }
-
+    public ProductCategory Category { get; private set; }
+    public Dictionary<string, object> Attributes { get; private set; }
+    public List<ProductVariant> Variants { get; private set; }
 
     public static Product NewProduct(
         string title,
@@ -53,11 +65,26 @@ public class Product
         string? description,
         Price price,
         Quantity quantity,
-        Guid sellerId
+        Guid sellerId,
+        ProductCategory category,
+        Dictionary<string, object>? attributes = null,
+        List<ProductVariant>? variants = null
     )
     {
         return new Product(
-            Guid.NewGuid(), title, slug, description, price, quantity, ProductStatus.Active(), sellerId, DateTime.UtcNow, false
+            Guid.NewGuid(), 
+            title, 
+            slug, 
+            description, 
+            price,
+            quantity,
+            ProductStatus.Active(), 
+            sellerId, 
+            DateTime.UtcNow, 
+            false,
+            category,
+            attributes,
+            variants
         );
     }
 
@@ -66,7 +93,10 @@ public class Product
         string slug,
         string? description,
         Price price,
-        Quantity quantity
+        Quantity quantity,
+        ProductCategory category,
+        Dictionary<string, object>? attributes,
+        List<ProductVariant>? variants
     )
     {
         Title = title;
@@ -74,6 +104,9 @@ public class Product
         Description = description;
         Price = price;
         Quantity = quantity;
+        Category = category;
+        Attributes = attributes ?? new Dictionary<string, object>();
+        Variants = variants ?? new List<ProductVariant>();
         UpdatedAt = DateTime.UtcNow;
     }
 

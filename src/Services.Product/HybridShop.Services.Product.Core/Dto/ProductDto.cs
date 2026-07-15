@@ -9,5 +9,10 @@ public class ProductDto
     public decimal Price { get; set; }
     public int Quantity { get; set; }
     public SellerDto Seller { get; set; } = null!;
+    public string Category { get; set; } = null!;
+    public Dictionary<string, object> Attributes { get; set; } = null!;
+    public List<ProductVariantDto> Variants { get; set; } = new();
+    public bool IsDeleted { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 }
-
