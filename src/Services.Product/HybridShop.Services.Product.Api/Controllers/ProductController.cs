@@ -1,12 +1,10 @@
-
 using Microsoft.AspNetCore.Mvc;
 using BuildingBlocks.OpenApi.Context;
 using Microsoft.AspNetCore.Authorization;
 using HybridShop.Services.Product.Application.Dto;
 using HybridShop.Services.Product.Application.Services;
 using HybridShop.Services.Product.Application.Exceptions;
-
-
+using HybridShop.Services.Product.Core.Exceptions;
 
 namespace HybridShop.Services.Product.Api.Controllers;
 
@@ -16,6 +14,7 @@ public class ProductController : ControllerBase
 {
     private readonly IUserContext _context;
     private readonly ProductService _productService;
+
     public ProductController(
         IUserContext userContext,
         ProductService productService
@@ -35,43 +34,51 @@ public class ProductController : ControllerBase
             var product = await _productService.AddProductAsync(dto, userId);
             return Ok(product); 
         }
+        catch (InvalidProductException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
         catch (Exception ex) 
         {
-            return BadRequest(new { message = ex.Message, StackTrace = ex.StackTrace });
+            return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
         }
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetProduct([FromQuery] Guid productId)
+    [HttpGet("{ProductId:guid}")]
+    public async Task<IActionResult> GetProduct([FromRoute] Guid ProductId)
     {
         try
         {
-            var product = await _productService.GetProductAsync(productId);
+            var product = await _productService.GetProductAsync(ProductId);
             return Ok(product); 
         }
         catch (ProductNotFoundException ex) 
         {
             return NotFound(new { message = ex.Message });
         }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+        }
     }
 
     [HttpGet("browse")]
-    public async Task<IActionResult> BrowseProducts([FromQuery] int skip = 0, int take = 10)
+    public async Task<IActionResult> BrowseProducts([FromQuery] BrowseProductsQueryDto query)
     {
         try
         {
-            var products = await _productService.BrowseProductsAsync(skip, take);
+            var products = await _productService.BrowseProductsAsync(query);
             return Ok(products); 
         }
         catch (Exception ex) 
         {
-            return BadRequest(new { message = ex.Message, details = ex.InnerException?.Message, stack = ex.StackTrace });
+            return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
         }
     }
 
     [Authorize]
-    [HttpPut]
-    public async Task<IActionResult> UpdateProduct([FromQuery] Guid ProductId, [FromBody] UpdateProductDto dto)
+    [HttpPut("{ProductId:guid}")]
+    public async Task<IActionResult> UpdateProduct([FromRoute] Guid ProductId, [FromBody] UpdateProductDto dto)
     {
         try
         {
@@ -82,17 +89,25 @@ public class ProductController : ControllerBase
         }
         catch (ProductNotFoundException ex)
         {
-            return NotFound(new {message = ex.Message });
+            return NotFound(new { message = ex.Message });
         }
         catch (DontHavePermissionsException ex)
         {
-            return BadRequest(new {message = ex.Message });
+            return Forbid();
+        }
+        catch (InvalidProductException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
         }
     }
 
     [Authorize]
-    [HttpDelete]
-    public async Task<IActionResult> DeleteProduct([FromQuery] Guid ProductId)
+    [HttpDelete("{ProductId:guid}")]
+    public async Task<IActionResult> DeleteProduct([FromRoute] Guid ProductId)
     {
         try
         {
@@ -103,12 +118,15 @@ public class ProductController : ControllerBase
         }
         catch (ProductNotFoundException ex)
         {
-            return NotFound(new {message = ex.Message });
+            return NotFound(new { message = ex.Message });
         }
         catch (DontHavePermissionsException ex)
         {
-            return BadRequest(new {message = ex.Message });
+            return Forbid();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
         }
     }
-    
 }

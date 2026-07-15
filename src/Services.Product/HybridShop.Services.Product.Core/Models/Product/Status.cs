@@ -1,3 +1,5 @@
+using HybridShop.Services.Product.Core.Exceptions;
+
 namespace HybridShop.Services.Product.Core.Product;
 
 public enum PStatus{ Draft, Active, Suspended, Archived }
@@ -7,7 +9,7 @@ public class ProductStatus
     public ProductStatus(PStatus value)
     {
         if(!Enum.IsDefined<PStatus>(value))
-            throw new Exception("Invalid product status.");
+            throw new InvalidProductStatusException();
 
         Value = value;
     }
