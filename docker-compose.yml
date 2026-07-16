@@ -89,6 +89,9 @@ services:
     environment:
       - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
       - EventBus__HostName=rabbitmq
+      - Jwt__Key=${JWT_KEY}
+      - Jwt__Issuer=${JWT_ISSUER}
+      - Jwt__Audience=${JWT_AUDIENCE}
     depends_on:
       - postgres
       - rabbitmq

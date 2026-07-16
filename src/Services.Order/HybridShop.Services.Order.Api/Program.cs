@@ -1,24 +1,14 @@
-using HybridShop.Services.Auth.Application;
-using HybridShop.Services.Auth.Infrastructure;
 using HybridShop.BuildingBlocks.OpenApi;
 using HybridShop.BuildingBlocks.OpenApi.Auth;
-using HybridShop.Services.Auth.Api.Grpc;
 using dotenv.net;
-
+using HybridShop.Services.Order.Application;
+using HybridShop.Services.Order.Infrastructure;
 
 DotEnv.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(8080, o => o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1);
-    options.ListenAnyIP(8081, o => o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2);
-});
-
 builder.Configuration.AddEnvironmentVariables();
-
-builder.Services.AddGrpc();
 
 builder.Services.AddSharedOpenApi();
 builder.Services.AddAuthServices(builder.Configuration);
@@ -34,12 +24,10 @@ builder.Services.AddControllers()
 
 var app = builder.Build();
 
-app.MapOpenApi("/api/auth/openapi/{documentName}.json");
+app.MapOpenApi("/api/order/openapi/{documentName}.json");
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapGrpcService<UserGrpcServer>();
 
 app.MapControllers();
 
