@@ -88,12 +88,14 @@ services:
       dockerfile: src/Services.Order/Dockerfile
     environment:
       - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
+      - ConnectionStrings__Redis=${REDIS_CONNECTION_STRING}
       - EventBus__HostName=rabbitmq
       - Jwt__Key=${JWT_KEY}
       - Jwt__Issuer=${JWT_ISSUER}
       - Jwt__Audience=${JWT_AUDIENCE}
     depends_on:
       - postgres
+      - redis
       - rabbitmq
 
   notification-service:
