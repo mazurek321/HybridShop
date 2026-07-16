@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option csharp_namespace = "HybridShop.Services.Product.Grpc";
+
+service ProductGrpcService {
+  rpc GetProductsByIds (GetProductsByIdsRequest) returns (GetProductsByIdsResponse);
+}
+
+message GetProductsByIdsRequest {
+  repeated string product_ids = 1;
+}
+
+message ProductGrpcModel {
+  string id = 1;
+  string title = 2;
+  double price = 3;
+}
+
+message GetProductsByIdsResponse {
+  repeated ProductGrpcModel products = 1;
+}

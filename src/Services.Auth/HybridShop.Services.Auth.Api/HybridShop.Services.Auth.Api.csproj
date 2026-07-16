@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="../../../BuildingBlocks/OpenApi/users.proto" GrpcServices="Server" />
+    <Protobuf Include="../../../BuildingBlocks/OpenApi/protos/users.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <PropertyGroup>

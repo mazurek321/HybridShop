@@ -8,9 +8,15 @@ namespace HybridShop.Services.Order.Application.Services;
 public class ShoppingCartService
 {
     private readonly IShoppingCartRepository _repository;
-    public ShoppingCartService(IShoppingCartRepository repository)
+    private readonly IProductServiceClient _productClient; 
+
+    public ShoppingCartService(
+        IShoppingCartRepository repository,
+        IProductServiceClient productClient
+    )
     {
         _repository = repository;
+        _productClient = productClient;
     }
 
     public async Task<ShoppingCartDto> GetCartAsync(Guid userId)
@@ -20,10 +26,35 @@ public class ShoppingCartService
         {
             var newCart = ShoppingCart.NewShoppingCart(userId);
             await _repository.UpdateCartAsync(newCart);
-            return MapToDto(newCart);
+            return new ShoppingCartDto { UserId = userId };
         }
 
-        return MapToDto(cart);
+        if (!cart.Items.Any())
+        {
+            return new ShoppingCartDto { UserId = cart.UserId };
+        }
+
+        var productIds = cart.Items.Select(i => i.ProductId).ToList();
+
+        var externalProducts = await _productClient.GetProductsByIdsAsync(productIds);
+        var productsDict = externalProducts.ToDictionary(p => p.Id);
+
+        return new ShoppingCartDto
+        {
+            UserId = cart.UserId,
+            Items = cart.Items.Select(i =>
+            {
+                productsDict.TryGetValue(i.ProductId, out var productDetails);
+
+                return new CartItemDto
+                {
+                    ProductId = i.ProductId,
+                    Quantity = i.Quantity.Value,
+                    Title = productDetails?.Title ?? "Produkt niedostępny",
+                    Price = productDetails?.Price ?? 0m
+                };
+            }).ToList()
+        };
     }
 
     public async Task AddItemToCartAsync(Guid userId, AddCartItemDto dto)
@@ -55,18 +86,5 @@ public class ShoppingCartService
             throw new CartNotFoundException();
 
         await _repository.DeleteCartAsync(userId);
-    }
-
-    private static ShoppingCartDto MapToDto(ShoppingCart cart)
-    {
-        return new ShoppingCartDto
-        {
-            UserId = cart.UserId,
-            Items = cart.Items.Select(i => new CartItemDto
-            {
-                ProductId = i.ProductId,
-                Quantity = i.Quantity.Value
-            }).ToList()
-        };
     }
 }
