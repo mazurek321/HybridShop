@@ -1,3 +1,5 @@
+using HybridShop.Services.Order.Core.Interfaces;
+using HybridShop.Services.Order.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +14,12 @@ public static class DependencyInjection
         services.AddDbContext<OrderDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-        // services.AddScoped<IUserRepository, UserRepository>();
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetConnectionString("Redis");
+        });
+
+        services.AddScoped<IShoppingCartRepository, RedisShoppingCartRepository>();
         
         return services;
     }
