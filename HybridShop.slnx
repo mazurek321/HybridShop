@@ -27,6 +27,9 @@
   </Folder>
 
   <Folder Name="/src/Services.Order/">
-    <Project Path="src/Services.Order/HybridShop.Services.Order.csproj" />
+    <Project Path="src/Services.Order/HybridShop.Services.Order.Api/HybridShop.Services.Order.Api.csproj" />
+    <Project Path="src/Services.Order/HybridShop.Services.Order.Application/HybridShop.Services.Order.Application.csproj" />
+    <Project Path="src/Services.Order/HybridShop.Services.Order.Core/HybridShop.Services.Order.Core.csproj" />
+    <Project Path="src/Services.Order/HybridShop.Services.Order.Infrastructure/HybridShop.Services.Order.Infrastructure.csproj" />
   </Folder>
 </Solution>

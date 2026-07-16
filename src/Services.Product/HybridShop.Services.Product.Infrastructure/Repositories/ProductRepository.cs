@@ -17,14 +17,9 @@ public class ProductRepository : IProductRepository
         await _dbContext.InsertOneAsync(product);
     }
 
-    public async Task<Core.Product.Product?> GetByIdAsync(Guid id, bool ignoreQueryFilters = false)
+    public async Task<Core.Product.Product?> GetByIdAsync(Guid id)
     {
-        var filter = ignoreQueryFilters
-            ? Builders<Core.Product.Product>.Filter.Eq(p => p.Id, id)
-            : Builders<Core.Product.Product>.Filter.And(
-                Builders<Core.Product.Product>.Filter.Eq(p => p.Id, id),
-                Builders<Core.Product.Product>.Filter.Eq(p => p.IsDeleted, false)
-              );
+        var filter = Builders<Core.Product.Product>.Filter.Eq(p => p.Id, id);
 
         return await _dbContext.Find(filter).FirstOrDefaultAsync();
     }

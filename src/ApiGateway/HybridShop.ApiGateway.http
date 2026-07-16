@@ -1,6 +1,0 @@
-@HybridShop.ApiGateway_HostAddress = http://localhost:5288
-
-GET {{HybridShop.ApiGateway_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
