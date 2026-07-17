@@ -27,6 +27,7 @@ public class Order
         ShippingAddress = shippingAddress;
         Status = status;
         CreatedAt = createdAt;
+        UpdatedAt = createdAt;
     }
 
     public Guid Id { get; private set; }
@@ -39,6 +40,7 @@ public class Order
     public string ShippingAddress { get; private set; } = string.Empty;
     public OrderStatus Status { get; private set; }
     public DateTime CreatedAt { get; private set; }
+    public DateTime UpdatedAt { get; private set; }
 
     public static Order Create(
         Guid buyerId,
@@ -56,5 +58,6 @@ public class Order
     public void UpdateStatus(OrderStatus status)
     {
         Status = status;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

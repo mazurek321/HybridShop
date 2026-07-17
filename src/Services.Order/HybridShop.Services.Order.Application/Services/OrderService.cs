@@ -11,16 +11,19 @@ public class OrderService
     private readonly IShoppingCartRepository _cartRepository;
     private readonly IOrderRepository _orderRepository;
     private readonly IProductServiceClient _productClient;
+    private readonly IUnitOfWork _unitOfWork;
 
     public OrderService(
         IShoppingCartRepository cartRepository,
         IOrderRepository orderRepository,
-        IProductServiceClient productClient
+        IProductServiceClient productClient,
+        IUnitOfWork unitOfWork
     )
     {
         _cartRepository = cartRepository;
         _orderRepository = orderRepository;
         _productClient = productClient;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<List<OrderDto>> CreateOrdersFromCartAsync(Guid userId, CreateOrderDto dto)
@@ -28,6 +31,9 @@ public class OrderService
         var cart = await _cartRepository.GetCartAsync(userId);
         if (cart is null || !cart.Items.Any())
             throw new CartIsEmptyOrDoesntExistException();
+
+        if (cart.Version != dto.CartVersion)
+            throw new CartConcurrencyException();
 
         if (cart.Delivery is null)
             throw new InvalidDeliveryAddressException();
@@ -37,49 +43,84 @@ public class OrderService
 
         foreach (var id in productIds)
         {
-            var p = await _productClient.GetProductBySkuIdAsync(id) ?? 
-                    (await _productClient.GetProductsByIdsAsync(new[] { id })).FirstOrDefault();
-            if (p is not null)
+            var productDetails = await _productClient.GetProductBySkuIdAsync(id);
+            
+            if (productDetails is null)
             {
-                productsDict[id] = p;
+                var mainProducts = await _productClient.GetProductsByIdsAsync(new[] { id });
+                productDetails = mainProducts.FirstOrDefault();
+            }
+
+            if (productDetails is not null)
+            {
+                productsDict[id] = productDetails;
             }
         }
-        
-        var itemsBySeller = cart.Items.GroupBy(item => 
-            productsDict.TryGetValue(item.ProductId, out var p) ? p.SellerId : Guid.Empty);
 
-        var ordersToCreate = new List<Core.Models.Order.Order>();
-
-        foreach (var group in itemsBySeller)
+        foreach (var item in cart.Items)
         {
-            var sellerId = group.Key;
-            var orderItems = group.Select(i => OrderItem.AddOrderItem(
-                i.ProductId,
-                productsDict.TryGetValue(i.ProductId, out var p) ? p.Title : "Produkt",
-                i.Quantity.Value,
-                i.Price
-            )).ToList();
+            if (!productsDict.TryGetValue(item.ProductId, out var product))
+                throw new ProductNotFoundException(item.ProductId);
 
-            var order = Core.Models.Order.Order.Create(
-                userId,
-                sellerId,
-                orderItems,
-                cart.Delivery.Price,
-                cart.Delivery.Name,
-                dto.ShippingAddress
-            );
-
-            await _orderRepository.AddAsync(order);
-            ordersToCreate.Add(order);
+            if (product.Price != item.Price)
+                throw new InvalidPriceException();
+                
+            if (product.Quantity < item.Quantity.Value)
+                throw new InvalidQuantityException();
         }
 
+        var finalCheckCart = await _cartRepository.GetCartAsync(userId);
+        if (finalCheckCart is null || finalCheckCart.Version != dto.CartVersion)
+            throw new CartConcurrencyException();
+
         await _cartRepository.DeleteCartAsync(userId);
+
+        var itemsBySeller = cart.Items.GroupBy(item => productsDict[item.ProductId].SellerId);
+        var ordersToCreate = new List<Core.Models.Order.Order>();
+
+        await _unitOfWork.BeginTransactionAsync();
+
+        try
+        {
+            foreach (var group in itemsBySeller)
+            {
+                var sellerId = group.Key;
+                var orderItems = group.Select(i => OrderItem.AddOrderItem(
+                    i.ProductId,
+                    productsDict[i.ProductId].Title,
+                    i.Quantity.Value,
+                    i.Price
+                )).ToList();
+
+                var order = Core.Models.Order.Order.Create(
+                    userId,
+                    sellerId,
+                    orderItems,
+                    cart.Delivery.Price,
+                    cart.Delivery.Name,
+                    dto.ShippingAddress
+                );
+
+                await _orderRepository.AddAsync(order);
+                ordersToCreate.Add(order);
+            }
+
+            await _unitOfWork.CommitTransactionAsync();
+        }
+        catch
+        {
+            await _unitOfWork.RollbackTransactionAsync();
+            throw;
+        }
 
         return ordersToCreate.Select(MapToDto).ToList();
     }
 
-    public async Task<IEnumerable<OrderDto>> GetBuyerOrdersAsync(Guid buyerId)
+    public async Task<IEnumerable<OrderDto>> GetBuyerOrdersAsync(Guid buyerId, Guid currentUserId)
     {
+        if (buyerId != currentUserId)
+            throw new UnauthorizedException();
+
         var orders = await _orderRepository.GetByBuyerIdAsync(buyerId);
         return orders.Select(MapToDto);
     }
@@ -90,11 +131,14 @@ public class OrderService
         return orders.Select(MapToDto);
     }
 
-    public async Task UpdateOrderStatusAsync(Guid orderId, OrderStatus status)
+    public async Task UpdateOrderStatusAsync(Guid orderId, OrderStatus status, Guid currentUserId, bool isUserSeller)
     {
         var order = await _orderRepository.GetByIdAsync(orderId);
         if (order is null)
             throw new OrderNotFoundException();
+
+        if (!isUserSeller || order.SellerId != currentUserId)
+            throw new UnauthorizedException();
 
         order.UpdateStatus(status);
         await _orderRepository.UpdateAsync(order);
@@ -113,13 +157,13 @@ public class OrderService
             ShippingAddress = order.ShippingAddress,
             Status = order.Status.ToString(),
             CreatedAt = order.CreatedAt,
-            Items = order.Items.Select(i => new OrderItemDto
+            Items = order.Items?.Select(i => new OrderItemDto
             {
                 ProductId = i.ProductId,
                 Title = i.Title,
                 Quantity = i.Quantity,
                 Price = i.Price
-            }).ToList()
+            }).ToList() ?? new List<OrderItemDto>()
         };
     }
 }

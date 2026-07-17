@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HybridShop.Services.Order.Infrastructure.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
-    [Migration("20260717115935_InitialPostgresOrderDb")]
+    [Migration("20260717160057_InitialPostgresOrderDb")]
     partial class InitialPostgresOrderDb
     {
         /// <inheritdoc />
@@ -58,6 +58,9 @@ namespace HybridShop.Services.Order.Infrastructure.Migrations
 
                     b.Property<decimal>("Total")
                         .HasColumnType("numeric");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
