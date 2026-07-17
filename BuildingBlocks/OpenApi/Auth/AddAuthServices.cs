@@ -6,13 +6,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using BuildingBlocks.OpenApi.Context;
 
-
 namespace HybridShop.BuildingBlocks.OpenApi.Auth;
 
 public static class AuthenticationExtensions
 {
     public static IServiceCollection AddAuthServices(this IServiceCollection services, IConfiguration configuration)
     {
+        var envKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? configuration["JWT_KEY"];
+        var envIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? configuration["JWT_ISSUER"];
+        var envAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? configuration["JWT_AUDIENCE"];
+
+        if (!string.IsNullOrEmpty(envKey)) configuration["Jwt:Key"] = envKey;
+        if (!string.IsNullOrEmpty(envIssuer)) configuration["Jwt:Issuer"] = envIssuer;
+        if (!string.IsNullOrEmpty(envAudience)) configuration["Jwt:Audience"] = envAudience;
+
         var jwtKey = configuration["Jwt:Key"] 
             ?? throw new InvalidOperationException("JWT Signing Key is missing from configuration.");
             

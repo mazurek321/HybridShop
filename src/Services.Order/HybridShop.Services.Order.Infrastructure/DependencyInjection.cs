@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using HybridShop.Services.Product.Grpc;
-using HybridShop.Services.Order.Infrastructure.Services;
+using HybridShop.Services.Order.Infrastructure.Clients;
 
 
 namespace HybridShop.Services.Order.Infrastructure;
@@ -29,6 +29,7 @@ public static class DependencyInjection
 
         services.AddScoped<IShoppingCartRepository, RedisShoppingCartRepository>();
         services.AddScoped<IProductServiceClient, ProductServiceClient>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
         
         return services;
     }

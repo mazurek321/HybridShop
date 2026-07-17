@@ -4,7 +4,7 @@ using BuildingBlocks.OpenApi.Context;
 using HybridShop.Services.Order.Application.Services;
 using HybridShop.Services.Order.Application.Exceptions;
 using HybridShop.Services.Order.Application.Dto;
-
+using HybridShop.Services.Order.Core.Models.Delivery;
 
 namespace HybridShop.Services.Order.Api.Controllers;
 
@@ -86,5 +86,29 @@ public class ShoppingCartController : ControllerBase
         {
             return NotFound(new { message = ex.Message });
         }
+    }
+
+    [Authorize]
+    [HttpPost("delivery")]
+    public async Task<IActionResult> SetDelivery([FromBody] SetDeliveryMethodDto dto)
+    {
+        try
+        {
+            var userId = _context.Id;
+            await _shoppingCartService.SetDeliveryMethodAsync(userId, dto);
+            return Ok();
+        }
+        catch (CartNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    [Authorize]
+    [HttpGet("delivery-options")]
+    public async Task<IActionResult> GetDeliveryOptions()
+    {
+        var options = await _shoppingCartService.GetAvailableDeliveryMethodsAsync();
+        return Ok(options);
     }
 }

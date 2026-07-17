@@ -43,9 +43,41 @@ public class ProductGrpcServer : ProductGrpcService.ProductGrpcServiceBase
         {
             Id = p.Id.ToString(),
             Title = p.Title,
-            Price = (double)p.Price.Value 
+            Price = (double)p.Price.Value,
+            Quantity = p.Quantity.Value,
+            SellerId = p.SellerId.ToString()
         }));
 
         return response;
+    }
+
+    public override async Task<GetProductBySkuIdResponse> GetProductBySkuId(
+        GetProductBySkuIdRequest request, 
+        ServerCallContext context
+    )
+    {
+        if (!Guid.TryParse(request.SkuId, out var skuId))
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid SKU ID format."));
+        }
+
+        var product = await _productRepository.GetBySkuIdAsync(skuId);
+        
+        if (product is null)
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, "Product variant with specified SKU ID not found."));
+        }
+
+        var variant = product.Variants.First(v => v.SkuId == skuId);
+
+        return new GetProductBySkuIdResponse
+        {
+            ProductId = product.Id.ToString(),
+            SkuId = variant.SkuId.ToString(),
+            Title = $"{product.Title} ({string.Join(", ", variant.Attributes.Values)})",
+            Price = (double)variant.Price.Value,
+            Quantity = variant.Quantity.Value,
+            SellerId = product.SellerId.ToString()
+        };
     }
 }

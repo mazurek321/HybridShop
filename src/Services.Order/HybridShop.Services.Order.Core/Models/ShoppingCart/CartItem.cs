@@ -12,11 +12,13 @@ public class CartItem
     [JsonConstructor]
     private CartItem(
         Guid productId,
-        Quantity quantity
+        Quantity quantity,
+        decimal price
     )
     {
         ProductId = productId;
         Quantity = quantity;
+        Price = price;
     }
 
     [JsonPropertyName("productId")]
@@ -24,12 +26,17 @@ public class CartItem
 
     [JsonPropertyName("quantity")]
     public Quantity Quantity { get; private set; }
+
+    [JsonPropertyName("price")]
+    public decimal Price { get; private set; }
+
     public static CartItem NewCartItem(
         Guid productId,
-        Quantity quantity
+        Quantity quantity,
+        decimal price
     )
     {
-        return new CartItem(productId, quantity);
+        return new CartItem(productId, quantity, price);
     }
 
     public void UpdateQuantity(Quantity newQuantity)
