@@ -8,6 +8,7 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddScoped<ShoppingCartService>();
+        services.AddScoped<OrderService>();
         return services;
     }
 }

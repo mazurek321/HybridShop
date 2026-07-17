@@ -4,6 +4,7 @@ option csharp_namespace = "HybridShop.Services.Product.Grpc";
 
 service ProductGrpcService {
   rpc GetProductsByIds (GetProductsByIdsRequest) returns (GetProductsByIdsResponse);
+  rpc GetProductBySkuId (GetProductBySkuIdRequest) returns (GetProductBySkuIdResponse);
 }
 
 message GetProductsByIdsRequest {
@@ -14,8 +15,23 @@ message ProductGrpcModel {
   string id = 1;
   string title = 2;
   double price = 3;
+  int32 quantity = 4; 
+  string seller_id = 5;
 }
 
 message GetProductsByIdsResponse {
   repeated ProductGrpcModel products = 1;
+}
+
+message GetProductBySkuIdRequest {
+  string sku_id = 1;
+}
+
+message GetProductBySkuIdResponse {
+  string product_id = 1;
+  string sku_id = 2;
+  string title = 3;
+  double price = 4;
+  int32 quantity = 5;
+  string seller_id = 6;
 }

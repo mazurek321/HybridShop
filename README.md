@@ -39,5 +39,12 @@ dotnet ef migrations add InitialPostgresAuthDb -s HybridShop.Services.Auth.Api/H
 Infrastructure
 dotnet ef database update --startup-project ../HybridShop.Services.Auth.Api/
 
+## Migracje dla Service.Order
+folder: HybridShop.Services.Order
+dotnet ef migrations add InitialPostgresOrderDb -s HybridShop.Services.Order.Api/HybridShop.Services.Order.Api.csproj -p HybridShop.Services.Order.Infrastructure/HybridShop.Services.Order.Infrastructure.csproj
+
+Infrastructure
+dotnet ef database update --startup-project ../HybridShop.Services.Order.Api/
+
 ## logs:
 docker compose logs -f

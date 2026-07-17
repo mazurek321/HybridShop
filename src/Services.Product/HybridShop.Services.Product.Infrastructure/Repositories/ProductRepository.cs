@@ -24,6 +24,16 @@ public class ProductRepository : IProductRepository
         return await _dbContext.Find(filter).FirstOrDefaultAsync();
     }
 
+    public async Task<Core.Product.Product?> GetBySkuIdAsync(Guid skuId)
+    {
+        var filter = Builders<Core.Product.Product>.Filter.ElemMatch(
+            p => p.Variants,
+            v => v.SkuId == skuId
+        );
+
+        return await _dbContext.Find(filter).FirstOrDefaultAsync();
+    }
+
     public async Task<IEnumerable<Core.Product.Product>> BrowseProductsAsync(
         int skip, 
         int take, 
