@@ -31,9 +31,25 @@ public class OrderController : ControllerBase
             var orders = await _orderService.CreateOrdersFromCartAsync(userId, dto);
             return Ok(orders);
         }
-        catch (InvalidOperationException ex)
+        catch (CartConcurrencyException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
+        catch (ProductNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex) when (
+            ex is CartIsEmptyOrDoesntExistException ||
+            ex is InvalidDeliveryAddressException ||
+            ex is InvalidPriceException ||
+            ex is InvalidQuantityException)
         {
             return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Wystąpił nieoczekiwany błąd serwera.", details = ex.Message });
         }
     }
 
@@ -41,18 +57,32 @@ public class OrderController : ControllerBase
     [HttpGet("my-orders")]
     public async Task<IActionResult> GetMyOrders()
     {
-        var userId = _context.Id;
-        var orders = await _orderService.GetBuyerOrdersAsync(userId);
-        return Ok(orders);
+        try
+        {
+            var userId = _context.Id;
+            var orders = await _orderService.GetBuyerOrdersAsync(userId, userId);
+            return Ok(orders);
+        }
+        catch (UnauthorizedException)
+        {
+            return Forbid();
+        }
     }
 
     [Authorize]
     [HttpGet("sales")]
     public async Task<IActionResult> GetSalesOrders()
     {
-        var sellerId = _context.Id;
-        var orders = await _orderService.GetSellerOrdersAsync(sellerId);
-        return Ok(orders);
+        try
+        {
+            var sellerId = _context.Id;
+            var orders = await _orderService.GetSellerOrdersAsync(sellerId);
+            return Ok(orders);
+        }
+        catch (UnauthorizedException)
+        {
+            return Forbid();
+        }
     }
 
     [Authorize]
@@ -66,12 +96,19 @@ public class OrderController : ControllerBase
                 return BadRequest(new { message = "Nieprawidłowy status." });
             }
 
-            await _orderService.UpdateOrderStatusAsync(orderId, (OrderStatus)dto.Status);
+            var currentUserId = _context.Id;
+            var isSeller = User.IsInRole("Seller");
+
+            await _orderService.UpdateOrderStatusAsync(orderId, (OrderStatus)dto.Status, currentUserId, isSeller);
             return Ok();
         }
         catch (OrderNotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+        catch (UnauthorizedException)
+        {
+            return Forbid();
         }
     }
 }

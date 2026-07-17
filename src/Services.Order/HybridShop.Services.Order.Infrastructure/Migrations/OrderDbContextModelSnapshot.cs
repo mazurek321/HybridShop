@@ -56,6 +56,9 @@ namespace HybridShop.Services.Order.Infrastructure.Migrations
                     b.Property<decimal>("Total")
                         .HasColumnType("numeric");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.ToTable("Orders", (string)null);

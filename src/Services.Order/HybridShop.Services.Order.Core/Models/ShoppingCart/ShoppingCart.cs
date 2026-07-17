@@ -12,13 +12,15 @@ public class ShoppingCart
         Guid userId,
         List<CartItem>? items = null,
         decimal total = 0,
-        DeliveryMethod? delivery = null
+        DeliveryMethod? delivery = null,
+        Guid version = default
     )
     {
         UserId = userId;
         Items = items ?? new List<CartItem>();
         Delivery = delivery;
         Total = total;
+        Version = version == default ? Guid.NewGuid() : version;
     }
     
     [JsonPropertyName("userId")]
@@ -33,9 +35,12 @@ public class ShoppingCart
     [JsonPropertyName("total")]
     public decimal Total { get; private set; }
 
+    [JsonPropertyName("version")]
+    public Guid Version { get; private set; }
+
     public static ShoppingCart NewShoppingCart(Guid userId)
     {
-        return new ShoppingCart(userId);
+        return new ShoppingCart(userId) { Version = Guid.NewGuid() };
     }
 
     public void AddItem(Guid productId, Quantity quantity, decimal price)
@@ -47,18 +52,21 @@ public class ShoppingCart
         else
             Items.Add(CartItem.NewCartItem(productId, quantity, price));
 
+        Version = Guid.NewGuid();
         RecalculateTotal();
     }
 
     public void RemoveItem(Guid productId)
     {
         Items.RemoveAll(i => i.ProductId == productId);
+        Version = Guid.NewGuid();
         RecalculateTotal();
     }
 
     public void SetDeliveryMethod(DeliveryMethod delivery)
     {
         Delivery = delivery;
+        Version = Guid.NewGuid();
         RecalculateTotal();
     }
 

@@ -29,12 +29,12 @@ public class ShoppingCartService
         {
             var newCart = ShoppingCart.NewShoppingCart(userId);
             await _repository.UpdateCartAsync(newCart);
-            return new ShoppingCartDto { UserId = userId };
+            return new ShoppingCartDto { UserId = userId, CartVersion = newCart.Version };
         }
 
         if (!cart.Items.Any())
         {
-            return new ShoppingCartDto { UserId = cart.UserId };
+            return new ShoppingCartDto { UserId = cart.UserId, CartVersion = cart.Version };
         }
 
         var productIds = cart.Items.Select(i => i.ProductId).ToList();
@@ -59,6 +59,7 @@ public class ShoppingCartService
         return new ShoppingCartDto
         {
             UserId = cart.UserId,
+            CartVersion = cart.Version,
             Total = cart.Total,
             DeliveryCost = cart.Delivery?.Price ?? 0m,
             DeliveryName = cart.Delivery?.Name,
