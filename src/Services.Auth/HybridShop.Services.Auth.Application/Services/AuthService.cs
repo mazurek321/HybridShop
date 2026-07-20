@@ -19,9 +19,9 @@ public class AuthService
         _tokenService = tokenService;
     }
 
-    public async Task RegisterAsync(RegisterRequest request)
+    public async Task RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
     {
-        var exists = await _userRepository.ExistsAsync(request.Email);
+        var exists = await _userRepository.ExistsAsync(request.Email, cancellationToken);
         if (exists)
             throw new EmailAlreadyExistsException(request.Email);
         
@@ -38,12 +38,12 @@ public class AuthService
         );
 
         _userRepository.Add(user);
-        await _userRepository.SaveChangesAsync();
+        await _userRepository.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<AuthResponse> LoginAsync(LoginRequest request)
+    public async Task<AuthResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
     {
-        var user = await _userRepository.GetWithTokensByEmailAsync(request.Email);
+        var user = await _userRepository.GetWithTokensByEmailAsync(request.Email, cancellationToken);
 
         if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash)) 
             throw new InvalidCredentialsException();
@@ -67,14 +67,14 @@ public class AuthService
         
         user.AddRefreshToken(refreshTokenString, TimeSpan.FromDays(7));
         
-        await _userRepository.SaveChangesAsync();
+        await _userRepository.SaveChangesAsync(cancellationToken);
 
         return new AuthResponse(accessToken, refreshTokenString);
     }
 
-    public async Task<AuthResponse> RefreshAsync(RefreshRequest request)
+    public async Task<AuthResponse> RefreshAsync(RefreshRequest request, CancellationToken cancellationToken = default)
     {
-        var user = await _userRepository.GetByRefreshTokenAsync(request.RefreshToken);
+        var user = await _userRepository.GetByRefreshTokenAsync(request.RefreshToken, cancellationToken);
 
         if (user is null) 
             throw new UserNotFoundException();
@@ -90,20 +90,20 @@ public class AuthService
 
         user.AddRefreshToken(newRefreshTokenString, TimeSpan.FromDays(7));
         
-        await _userRepository.SaveChangesAsync();
+        await _userRepository.SaveChangesAsync(cancellationToken);
 
         return new AuthResponse(newAccessToken, newRefreshTokenString);
     }
 
-    public async Task LogoutAsync(Guid userId)
+    public async Task LogoutAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        var user = await _userRepository.GetByIdAsync(userId);
+        var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
 
         if (user is null) 
             throw new UserNotFoundException();
 
         user.RevokeAllRefreshTokens();
         
-        await _userRepository.SaveChangesAsync();
+        await _userRepository.SaveChangesAsync(cancellationToken);
     }
 }

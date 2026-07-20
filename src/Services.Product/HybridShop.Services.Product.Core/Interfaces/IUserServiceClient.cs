@@ -4,5 +4,5 @@ namespace HybridShop.Services.Product.Core.Interfaces;
 
 public interface IUserServiceClient
 {
-    Task<SellerDto?> GetSellerDetailsAsync(Guid sellerId);
+    Task<SellerDto?> GetSellerDetailsAsync(Guid sellerId, CancellationToken cancellationToken = default);
 }

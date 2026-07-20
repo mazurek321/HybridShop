@@ -27,7 +27,7 @@ public class UserContext(IHttpContextAccessor httpContextAccessor) : IUserContex
         {
             var user = httpContextAccessor.HttpContext?.User;
             
-            if (user is null || !user.Identity?.IsAuthenticated == true)
+            if (user?.Identity is null || !user.Identity.IsAuthenticated)
             {
                 throw new UnauthorizedAccessException("User is not authenticated.");
             }

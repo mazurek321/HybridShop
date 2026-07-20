@@ -3,6 +3,7 @@ using HybridShop.Services.Product.Core.Product;
 using MongoDB.Driver;
 
 namespace HybridShop.Services.Product.Infrastructure;
+
 public class ProductRepository : IProductRepository
 {
     private readonly IMongoCollection<Core.Product.Product> _dbContext;
@@ -12,26 +13,26 @@ public class ProductRepository : IProductRepository
         _dbContext = dbContext.GetCollection<Core.Product.Product>("products");
     }
 
-    public async Task AddAsync(Core.Product.Product product)
+    public async Task AddAsync(Core.Product.Product product, CancellationToken cancellationToken = default)
     {
-        await _dbContext.InsertOneAsync(product);
+        await _dbContext.InsertOneAsync(product, cancellationToken: cancellationToken);
     }
 
-    public async Task<Core.Product.Product?> GetByIdAsync(Guid id)
+    public async Task<Core.Product.Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var filter = Builders<Core.Product.Product>.Filter.Eq(p => p.Id, id);
 
-        return await _dbContext.Find(filter).FirstOrDefaultAsync();
+        return await _dbContext.Find(filter).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<Core.Product.Product?> GetBySkuIdAsync(Guid skuId)
+    public async Task<Core.Product.Product?> GetBySkuIdAsync(Guid skuId, CancellationToken cancellationToken = default)
     {
         var filter = Builders<Core.Product.Product>.Filter.ElemMatch(
             p => p.Variants,
             v => v.SkuId == skuId
         );
 
-        return await _dbContext.Find(filter).FirstOrDefaultAsync();
+        return await _dbContext.Find(filter).FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<Core.Product.Product>> BrowseProductsAsync(
@@ -41,7 +42,8 @@ public class ProductRepository : IProductRepository
         decimal? priceFrom = null, 
         decimal? priceTo = null, 
         string? search = null,
-        bool ignoreQueryFilters = false)
+        bool ignoreQueryFilters = false,
+        CancellationToken cancellationToken = default)
     {
         var builder = Builders<Core.Product.Product>.Filter;
         var filter = builder.Empty;
@@ -64,15 +66,18 @@ public class ProductRepository : IProductRepository
         return await _dbContext.Find(filter)
             .Skip(skip)
             .Limit(take)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(Core.Product.Product product){
+    public async Task UpdateAsync(Core.Product.Product product, CancellationToken cancellationToken = default)
+    {
         var filter = Builders<Core.Product.Product>.Filter.Eq(p => p.Id, product.Id);
-        await _dbContext.ReplaceOneAsync(filter, product);
+        await _dbContext.ReplaceOneAsync(filter, product, cancellationToken: cancellationToken);
     }
-    public async Task DeleteAsync(Core.Product.Product product){
+
+    public async Task DeleteAsync(Core.Product.Product product, CancellationToken cancellationToken = default)
+    {
         var filter = Builders<Core.Product.Product>.Filter.Eq(p => p.Id, product.Id);
-        await _dbContext.DeleteOneAsync(filter);
+        await _dbContext.DeleteOneAsync(filter, cancellationToken);
     }
 }

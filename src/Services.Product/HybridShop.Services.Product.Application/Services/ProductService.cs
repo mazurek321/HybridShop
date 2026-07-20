@@ -21,7 +21,7 @@ public class ProductService
         _userServiceClient = userServiceClient;
     }
 
-    public async Task<Core.Product.Product> AddProductAsync(AddNewProductDto dto, Guid userId)
+    public async Task<Core.Product.Product> AddProductAsync(AddNewProductDto dto, Guid userId, CancellationToken cancellationToken = default)
     {
         var slug = GenerateSlug(dto.Title);
 
@@ -44,22 +44,22 @@ public class ProductService
             domainVariants
         );
 
-        await _productRepository.AddAsync(product);
+        await _productRepository.AddAsync(product, cancellationToken);
         return product;
     }
 
-    public async Task<ProductDto?> GetProductAsync(Guid productId)
+    public async Task<ProductDto?> GetProductAsync(Guid productId, CancellationToken cancellationToken = default)
     {
-        var product = await _productRepository.GetByIdAsync(productId);
+        var product = await _productRepository.GetByIdAsync(productId, cancellationToken);
         if (product is null)
             throw new ProductNotFoundException();
 
-        var seller = await _userServiceClient.GetSellerDetailsAsync(product.SellerId);
+        var seller = await _userServiceClient.GetSellerDetailsAsync(product.SellerId, cancellationToken);
 
         return MapToDto(product, seller);
     }
 
-    public async Task<IEnumerable<ProductDto>> BrowseProductsAsync(BrowseProductsQueryDto query)
+    public async Task<IEnumerable<ProductDto>> BrowseProductsAsync(BrowseProductsQueryDto query, CancellationToken cancellationToken = default)
     {
         PCategory? parsedCategory = null;
         if (!string.IsNullOrWhiteSpace(query.Category) && Enum.TryParse<PCategory>(query.Category, true, out var categoryVal))
@@ -73,21 +73,22 @@ public class ProductService
             parsedCategory, 
             query.PriceFrom, 
             query.PriceTo, 
-            query.Search
+            query.Search,
+            cancellationToken: cancellationToken
         );
 
         var tasks = products.Select(async product =>
         {
-            var seller = await _userServiceClient.GetSellerDetailsAsync(product.SellerId);
+            var seller = await _userServiceClient.GetSellerDetailsAsync(product.SellerId, cancellationToken);
             return MapToDto(product, seller);
         });
 
         return await Task.WhenAll(tasks);
     }
 
-    public async Task UpdateProduct(Guid productId, Guid userId, string role, UpdateProductDto dto)
+    public async Task UpdateProduct(Guid productId, Guid userId, string role, UpdateProductDto dto, CancellationToken cancellationToken = default)
     {
-        var product = await _productRepository.GetByIdAsync(productId);
+        var product = await _productRepository.GetByIdAsync(productId, cancellationToken);
 
         if (product is null)
             throw new ProductNotFoundException();
@@ -114,12 +115,12 @@ public class ProductService
             domainVariants
         );
 
-        await _productRepository.UpdateAsync(product);
+        await _productRepository.UpdateAsync(product, cancellationToken);
     }
 
-    public async Task DeleteProduct(Guid productId, Guid userId, string role)
+    public async Task DeleteProduct(Guid productId, Guid userId, string role, CancellationToken cancellationToken = default)
     {
-        var product = await _productRepository.GetByIdAsync(productId);
+        var product = await _productRepository.GetByIdAsync(productId, cancellationToken);
 
         if (product is null)
             throw new ProductNotFoundException();
@@ -128,7 +129,7 @@ public class ProductService
             throw new DontHavePermissionsException();
 
         product.Delete();
-        await _productRepository.UpdateAsync(product);
+        await _productRepository.UpdateAsync(product, cancellationToken);
     }
 
     private static ProductDto MapToDto(Core.Product.Product product, SellerDto? seller)

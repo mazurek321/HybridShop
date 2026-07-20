@@ -23,12 +23,12 @@ public class OrderController : ControllerBase
 
     [Authorize]
     [HttpPost("checkout")]
-    public async Task<IActionResult> Checkout([FromBody] CreateOrderDto dto)
+    public async Task<IActionResult> Checkout([FromBody] CreateOrderDto dto, CancellationToken cancellationToken)
     {
         try
         {
             var userId = _context.Id;
-            var orders = await _orderService.CreateOrdersFromCartAsync(userId, dto);
+            var orders = await _orderService.CreateOrdersFromCartAsync(userId, dto, cancellationToken);
             return Ok(orders);
         }
         catch (CartConcurrencyException ex)
@@ -55,12 +55,12 @@ public class OrderController : ControllerBase
 
     [Authorize]
     [HttpGet("my-orders")]
-    public async Task<IActionResult> GetMyOrders()
+    public async Task<IActionResult> GetMyOrders(CancellationToken cancellationToken)
     {
         try
         {
             var userId = _context.Id;
-            var orders = await _orderService.GetBuyerOrdersAsync(userId, userId);
+            var orders = await _orderService.GetBuyerOrdersAsync(userId, userId, cancellationToken);
             return Ok(orders);
         }
         catch (UnauthorizedException)
@@ -71,12 +71,12 @@ public class OrderController : ControllerBase
 
     [Authorize]
     [HttpGet("sales")]
-    public async Task<IActionResult> GetSalesOrders()
+    public async Task<IActionResult> GetSalesOrders(CancellationToken cancellationToken)
     {
         try
         {
             var sellerId = _context.Id;
-            var orders = await _orderService.GetSellerOrdersAsync(sellerId);
+            var orders = await _orderService.GetSellerOrdersAsync(sellerId, cancellationToken);
             return Ok(orders);
         }
         catch (UnauthorizedException)
@@ -87,7 +87,7 @@ public class OrderController : ControllerBase
 
     [Authorize]
     [HttpPatch("{orderId:guid}/status")]
-    public async Task<IActionResult> UpdateStatus(Guid orderId, [FromBody] UpdateOrderStatusDto dto)
+    public async Task<IActionResult> UpdateStatus(Guid orderId, [FromBody] UpdateOrderStatusDto dto, CancellationToken cancellationToken)
     {
         try
         {
@@ -99,7 +99,7 @@ public class OrderController : ControllerBase
             var currentUserId = _context.Id;
             var isSeller = User.IsInRole("Seller");
 
-            await _orderService.UpdateOrderStatusAsync(orderId, (OrderStatus)dto.Status, currentUserId, isSeller);
+            await _orderService.UpdateOrderStatusAsync(orderId, (OrderStatus)dto.Status, currentUserId, isSeller, cancellationToken);
             return Ok();
         }
         catch (OrderNotFoundException ex)

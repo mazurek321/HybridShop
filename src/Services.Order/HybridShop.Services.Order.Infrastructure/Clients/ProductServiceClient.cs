@@ -19,12 +19,12 @@ public class ProductServiceClient : IProductServiceClient
         _client = new ProductGrpcService.ProductGrpcServiceClient(channel);
     }
 
-    public async Task<IEnumerable<ProductExternalDto>> GetProductsByIdsAsync(IEnumerable<Guid> ids)
+    public async Task<IEnumerable<ProductExternalDto>> GetProductsByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken = default)
     {
         var request = new GetProductsByIdsRequest();
         request.ProductIds.AddRange(ids.Select(id => id.ToString()));
 
-        var response = await _client.GetProductsByIdsAsync(request);
+        var response = await _client.GetProductsByIdsAsync(request, cancellationToken: cancellationToken);
 
         return response.Products.Select(p => new ProductExternalDto
         {
@@ -36,12 +36,12 @@ public class ProductServiceClient : IProductServiceClient
         });
     }
 
-    public async Task<ProductExternalDto?> GetProductBySkuIdAsync(Guid skuId)
+    public async Task<ProductExternalDto?> GetProductBySkuIdAsync(Guid skuId, CancellationToken cancellationToken = default)
     {
         try
         {
             var request = new GetProductBySkuIdRequest { SkuId = skuId.ToString() };
-            var response = await _client.GetProductBySkuIdAsync(request);
+            var response = await _client.GetProductBySkuIdAsync(request, cancellationToken: cancellationToken);
 
             if (response == null || string.IsNullOrEmpty(response.ProductId))
                 return null;
