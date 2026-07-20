@@ -4,13 +4,15 @@ using HybridShop.Services.Product.Application;
 using HybridShop.BuildingBlocks.OpenApi.Auth;
 using dotenv.net;
 using HybridShop.Services.Product.Api.Grpc;
+using HybridShop.Services.Product.Api.GraphQL;
+using Microsoft.AspNetCore.HttpOverrides;
 
 string? currentDir = Directory.GetCurrentDirectory();
 string? envFilePath = null;
 
 while (currentDir != null)
 {
-    var potentialPath = Path.Combine(currentDir, ".env");
+    var potentialPath = System.IO.Path.Combine(currentDir, ".env");
     if (File.Exists(potentialPath))
     {
         envFilePath = potentialPath;
@@ -41,6 +43,11 @@ builder.WebHost.ConfigureKestrel(options =>
 
 builder.Services.AddGrpc();
 
+builder.Services
+    .AddGraphQLServer()
+    .AddQueryType<Query>()
+    .AddType<AnyType>();
+
 builder.Services.AddSharedOpenApi();
 builder.Services.AddAuthServices(builder.Configuration);
 
@@ -59,6 +66,8 @@ app.MapOpenApi("/api/product/openapi/{documentName}.json");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapGraphQL("/graphql");
 
 app.MapGrpcService<ProductGrpcServer>();
 
