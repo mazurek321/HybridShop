@@ -3,6 +3,8 @@ using HybridShop.Services.Order.Application.Exceptions;
 using HybridShop.Services.Order.Core.Interfaces;
 using HybridShop.Services.Order.Core.Models.Dto;
 using HybridShop.Services.Order.Core.Models.Order;
+using HybridShop.BuildingBlocks.EventBus.Events;
+using MassTransit;
 
 namespace HybridShop.Services.Order.Application.Services;
 
@@ -12,18 +14,21 @@ public class OrderService
     private readonly IOrderRepository _orderRepository;
     private readonly IProductServiceClient _productClient;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     public OrderService(
         IShoppingCartRepository cartRepository,
         IOrderRepository orderRepository,
         IProductServiceClient productClient,
-        IUnitOfWork unitOfWork
+        IUnitOfWork unitOfWork,
+        IPublishEndpoint publishEndpoint
     )
     {
         _cartRepository = cartRepository;
         _orderRepository = orderRepository;
         _productClient = productClient;
         _unitOfWork = unitOfWork;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<List<OrderDto>> CreateOrdersFromCartAsync(Guid userId, CreateOrderDto dto, CancellationToken cancellationToken = default)
@@ -111,6 +116,14 @@ public class OrderService
         {
             await _unitOfWork.RollbackTransactionAsync(cancellationToken);
             throw;
+        }
+
+        foreach (var order in ordersToCreate)
+        {
+            await _publishEndpoint.Publish(
+                new OrderCreatedEvent(order.Id, order.BuyerId, "user@example.com", order.Total),
+                cancellationToken
+            );
         }
 
         return ordersToCreate.Select(MapToDto).ToList();

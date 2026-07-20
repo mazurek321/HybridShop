@@ -19,6 +19,7 @@
     <ProjectReference Include="..\HybridShop.Services.Order.Infrastructure\HybridShop.Services.Order.Infrastructure.csproj" />
     <ProjectReference Include="..\HybridShop.Services.Order.Application\HybridShop.Services.Order.Application.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\OpenApi\OpenApi.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\EventBus\EventBus.csproj" />
   </ItemGroup>
   
 

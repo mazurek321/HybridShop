@@ -2,6 +2,8 @@ using HybridShop.Services.Auth.Application.Dto;
 using HybridShop.Services.Auth.Core.Models;
 using HybridShop.Services.Auth.Core.Interfaces;
 using HybridShop.Services.Auth.Application.Exceptions;
+using HybridShop.BuildingBlocks.EventBus.Events;
+using MassTransit;
 
 namespace HybridShop.Services.Auth.Application.Services;
 
@@ -9,14 +11,17 @@ public class AuthService
 {
     private readonly IUserRepository _userRepository;
     private readonly TokenService _tokenService;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     public AuthService(
         IUserRepository userRepository,
-        TokenService tokenService
+        TokenService tokenService,
+        IPublishEndpoint publishEndpoint
     )
     {
         _userRepository = userRepository;
         _tokenService = tokenService;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
@@ -39,6 +44,11 @@ public class AuthService
 
         _userRepository.Add(user);
         await _userRepository.SaveChangesAsync(cancellationToken);
+
+        await _publishEndpoint.Publish(
+            new UserRegisteredEvent(user.Id, user.Email, user.Name, user.Lastname),
+            cancellationToken
+        );
     }
 
     public async Task<AuthResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)

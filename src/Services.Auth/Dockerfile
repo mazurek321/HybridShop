@@ -9,7 +9,7 @@ COPY src/Services.Auth/HybridShop.Services.Auth.Api/HybridShop.Services.Auth.Api
 COPY src/Services.Auth/HybridShop.Services.Auth.Application/HybridShop.Services.Auth.Application.csproj src/Services.Auth/HybridShop.Services.Auth.Application/
 COPY src/Services.Auth/HybridShop.Services.Auth.Infrastructure/HybridShop.Services.Auth.Infrastructure.csproj src/Services.Auth/HybridShop.Services.Auth.Infrastructure/
 COPY src/Services.Auth/HybridShop.Services.Auth.Core/HybridShop.Services.Auth.Core.csproj src/Services.Auth/HybridShop.Services.Auth.Core/
-COPY BuildingBlocks/EventBus/HybridShop.BuildingBlocks.EventBus.csproj BuildingBlocks/EventBus/
+COPY BuildingBlocks/EventBus/EventBus.csproj BuildingBlocks/EventBus/
 COPY BuildingBlocks/OpenApi/OpenApi.csproj BuildingBlocks/OpenApi/
 
 RUN dotnet restore "src/Services.Auth/HybridShop.Services.Auth.Api/HybridShop.Services.Auth.Api.csproj"
