@@ -4,7 +4,6 @@ using BuildingBlocks.OpenApi.Context;
 using HybridShop.Services.Order.Application.Services;
 using HybridShop.Services.Order.Application.Exceptions;
 using HybridShop.Services.Order.Application.Dto;
-using HybridShop.Services.Order.Core.Models.Delivery;
 
 namespace HybridShop.Services.Order.Api.Controllers;
 
@@ -26,12 +25,12 @@ public class ShoppingCartController : ControllerBase
 
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> GetCart()
+    public async Task<IActionResult> GetCart(CancellationToken cancellationToken)
     {
         try
         {
             var userId = _context.Id;
-            var cart = await _shoppingCartService.GetCartAsync(userId);
+            var cart = await _shoppingCartService.GetCartAsync(userId, cancellationToken);
             return Ok(cart);
         }
         catch (CartNotFoundException ex)
@@ -42,12 +41,12 @@ public class ShoppingCartController : ControllerBase
 
     [Authorize]
     [HttpPost("items")]
-    public async Task<IActionResult> AddItem([FromBody] AddCartItemDto dto)
+    public async Task<IActionResult> AddItem([FromBody] AddCartItemDto dto, CancellationToken cancellationToken)
     {
         try
         {
             var userId = _context.Id;
-            await _shoppingCartService.AddItemToCartAsync(userId, dto);
+            await _shoppingCartService.AddItemToCartAsync(userId, dto, cancellationToken);
             return Ok();
         }
         catch (InvalidQuantityException ex)
@@ -58,12 +57,12 @@ public class ShoppingCartController : ControllerBase
 
     [Authorize]
     [HttpDelete("items/{productId:guid}")]
-    public async Task<IActionResult> RemoveItem(Guid productId)
+    public async Task<IActionResult> RemoveItem(Guid productId, CancellationToken cancellationToken)
     {
         try
         {
             var userId = _context.Id;
-            await _shoppingCartService.RemoveItemFromCartAsync(userId, productId);
+            await _shoppingCartService.RemoveItemFromCartAsync(userId, productId, cancellationToken);
             return NoContent();
         }
         catch (CartNotFoundException ex)
@@ -74,12 +73,12 @@ public class ShoppingCartController : ControllerBase
 
     [Authorize]
     [HttpDelete]
-    public async Task<IActionResult> ClearCart()
+    public async Task<IActionResult> ClearCart(CancellationToken cancellationToken)
     {
         try
         {
             var userId = _context.Id;
-            await _shoppingCartService.ClearCartAsync(userId);
+            await _shoppingCartService.ClearCartAsync(userId, cancellationToken);
             return NoContent();
         }
         catch (CartNotFoundException ex)
@@ -90,12 +89,12 @@ public class ShoppingCartController : ControllerBase
 
     [Authorize]
     [HttpPost("delivery")]
-    public async Task<IActionResult> SetDelivery([FromBody] SetDeliveryMethodDto dto)
+    public async Task<IActionResult> SetDelivery([FromBody] SetDeliveryMethodDto dto, CancellationToken cancellationToken)
     {
         try
         {
             var userId = _context.Id;
-            await _shoppingCartService.SetDeliveryMethodAsync(userId, dto);
+            await _shoppingCartService.SetDeliveryMethodAsync(userId, dto, cancellationToken);
             return Ok();
         }
         catch (CartNotFoundException ex)

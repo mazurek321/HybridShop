@@ -14,39 +14,28 @@ public class RedisShoppingCartRepository : IShoppingCartRepository
         AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7)
     };
 
-    public RedisShoppingCartRepository(
-        IDistributedCache cache
-    )
+    public RedisShoppingCartRepository(IDistributedCache cache)
     {
         _cache = cache;
     }
 
-    public async Task<ShoppingCart?> GetCartAsync(Guid userId)
+    public async Task<ShoppingCart?> GetCartAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        var data = await _cache.GetStringAsync(userId.ToString());
-        return
-            string.IsNullOrEmpty(data) ? 
-            null
-            : 
-            JsonSerializer.Deserialize<ShoppingCart>(data);
+        var data = await _cache.GetStringAsync(userId.ToString(), cancellationToken);
+        return string.IsNullOrEmpty(data) 
+            ? null 
+            : JsonSerializer.Deserialize<ShoppingCart>(data);
     }
-    public async Task<ShoppingCart> UpdateCartAsync(ShoppingCart cart)
+
+    public async Task<ShoppingCart> UpdateCartAsync(ShoppingCart cart, CancellationToken cancellationToken = default)
     {
         var data = JsonSerializer.Serialize(cart);
-        await _cache.SetStringAsync(cart.UserId.ToString(), data, CacheOptions);
+        await _cache.SetStringAsync(cart.UserId.ToString(), data, CacheOptions, cancellationToken);
         return cart;
     }
-    public async Task DeleteCartAsync(Guid userId)
+
+    public async Task DeleteCartAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        await _cache.RemoveAsync(userId.ToString());
+        await _cache.RemoveAsync(userId.ToString(), cancellationToken);
     }
-
 }
-
-
-
-
-
-
-
-

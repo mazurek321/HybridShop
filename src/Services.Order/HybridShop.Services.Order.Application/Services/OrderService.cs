@@ -26,9 +26,9 @@ public class OrderService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<List<OrderDto>> CreateOrdersFromCartAsync(Guid userId, CreateOrderDto dto)
+    public async Task<List<OrderDto>> CreateOrdersFromCartAsync(Guid userId, CreateOrderDto dto, CancellationToken cancellationToken = default)
     {
-        var cart = await _cartRepository.GetCartAsync(userId);
+        var cart = await _cartRepository.GetCartAsync(userId, cancellationToken);
         if (cart is null || !cart.Items.Any())
             throw new CartIsEmptyOrDoesntExistException();
 
@@ -43,11 +43,11 @@ public class OrderService
 
         foreach (var id in productIds)
         {
-            var productDetails = await _productClient.GetProductBySkuIdAsync(id);
+            var productDetails = await _productClient.GetProductBySkuIdAsync(id, cancellationToken);
             
             if (productDetails is null)
             {
-                var mainProducts = await _productClient.GetProductsByIdsAsync(new[] { id });
+                var mainProducts = await _productClient.GetProductsByIdsAsync(new[] { id }, cancellationToken);
                 productDetails = mainProducts.FirstOrDefault();
             }
 
@@ -69,16 +69,16 @@ public class OrderService
                 throw new InvalidQuantityException();
         }
 
-        var finalCheckCart = await _cartRepository.GetCartAsync(userId);
+        var finalCheckCart = await _cartRepository.GetCartAsync(userId, cancellationToken);
         if (finalCheckCart is null || finalCheckCart.Version != dto.CartVersion)
             throw new CartConcurrencyException();
 
-        await _cartRepository.DeleteCartAsync(userId);
+        await _cartRepository.DeleteCartAsync(userId, cancellationToken);
 
         var itemsBySeller = cart.Items.GroupBy(item => productsDict[item.ProductId].SellerId);
         var ordersToCreate = new List<Core.Models.Order.Order>();
 
-        await _unitOfWork.BeginTransactionAsync();
+        await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
         try
         {
@@ -101,39 +101,39 @@ public class OrderService
                     dto.ShippingAddress
                 );
 
-                await _orderRepository.AddAsync(order);
+                await _orderRepository.AddAsync(order, cancellationToken);
                 ordersToCreate.Add(order);
             }
 
-            await _unitOfWork.CommitTransactionAsync();
+            await _unitOfWork.CommitTransactionAsync(cancellationToken);
         }
         catch
         {
-            await _unitOfWork.RollbackTransactionAsync();
+            await _unitOfWork.RollbackTransactionAsync(cancellationToken);
             throw;
         }
 
         return ordersToCreate.Select(MapToDto).ToList();
     }
 
-    public async Task<IEnumerable<OrderDto>> GetBuyerOrdersAsync(Guid buyerId, Guid currentUserId)
+    public async Task<IEnumerable<OrderDto>> GetBuyerOrdersAsync(Guid buyerId, Guid currentUserId, CancellationToken cancellationToken = default)
     {
         if (buyerId != currentUserId)
             throw new UnauthorizedException();
 
-        var orders = await _orderRepository.GetByBuyerIdAsync(buyerId);
+        var orders = await _orderRepository.GetByBuyerIdAsync(buyerId, cancellationToken);
         return orders.Select(MapToDto);
     }
 
-    public async Task<IEnumerable<OrderDto>> GetSellerOrdersAsync(Guid sellerId)
+    public async Task<IEnumerable<OrderDto>> GetSellerOrdersAsync(Guid sellerId, CancellationToken cancellationToken = default)
     {
-        var orders = await _orderRepository.GetBySellerIdAsync(sellerId);
+        var orders = await _orderRepository.GetBySellerIdAsync(sellerId, cancellationToken);
         return orders.Select(MapToDto);
     }
 
-    public async Task UpdateOrderStatusAsync(Guid orderId, OrderStatus status, Guid currentUserId, bool isUserSeller)
+    public async Task UpdateOrderStatusAsync(Guid orderId, OrderStatus status, Guid currentUserId, bool isUserSeller, CancellationToken cancellationToken = default)
     {
-        var order = await _orderRepository.GetByIdAsync(orderId);
+        var order = await _orderRepository.GetByIdAsync(orderId, cancellationToken);
         if (order is null)
             throw new OrderNotFoundException();
 
@@ -141,7 +141,7 @@ public class OrderService
             throw new UnauthorizedException();
 
         order.UpdateStatus(status);
-        await _orderRepository.UpdateAsync(order);
+        await _orderRepository.UpdateAsync(order, cancellationToken);
     }
 
     private static OrderDto MapToDto(Core.Models.Order.Order order)

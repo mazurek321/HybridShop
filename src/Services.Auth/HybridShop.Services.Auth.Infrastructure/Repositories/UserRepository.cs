@@ -55,75 +55,74 @@ public class UserRepository : IUserRepository
         _dbContext = dbContext;
     }
 
-    public async Task<User?> GetByIdAsync(Guid id)
+    public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Users
             .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(u => u.Id == id);
+            .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
     }
 
-    public async Task<UserDto?> GetDtoByIdAsync(Guid id)
+    public async Task<UserDto?> GetDtoByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Users
             .Where(u => u.Id == id)
             .Select(MapToUserDto)
             .AsNoTracking()
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<AdminUserDto?> GetAdminDtoByIdAsync(Guid id)
+    public async Task<AdminUserDto?> GetAdminDtoByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Users
             .IgnoreQueryFilters()
             .Where(u => u.Id == id)
             .Select(MapToAdminUserDto)
             .AsNoTracking()
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<UserDto?> GetDtoByEmailAsync(string email)
+    public async Task<UserDto?> GetDtoByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Users
             .Where(u => u.Email == email)
             .Select(MapToUserDto)
             .AsNoTracking()
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<AdminUserDto?> GetAdminDtoByEmailAsync(string email)
+    public async Task<AdminUserDto?> GetAdminDtoByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Users
             .IgnoreQueryFilters()
             .Where(u => u.Email == email)
             .Select(MapToAdminUserDto)
             .AsNoTracking()
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<User?> GetByEmailAsync(string email)
+    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Users
             .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(u => u.Email == email);
+            .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
     }
 
-    public async Task<User?> GetWithTokensByEmailAsync(string email)
+    public async Task<User?> GetWithTokensByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Users
             .Include(u => u.RefreshTokens)
-            .FirstOrDefaultAsync(u => u.Email == email);
+            .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
     }
 
-
-    public async Task<User?> GetByRefreshTokenAsync(string refreshToken)
+    public async Task<User?> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Users
             .IgnoreQueryFilters()
             .Include(u => u.RefreshTokens)
-            .FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == refreshToken));
+            .FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == refreshToken), cancellationToken);
     }
 
-    public async Task<ICollection<UserDto>> BrowseDtoUsers(int skip, int take)
+    public async Task<ICollection<UserDto>> BrowseDtoUsers(int skip, int take, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Users
             .OrderBy(u => u.Id)
@@ -131,10 +130,10 @@ public class UserRepository : IUserRepository
             .Take(take)
             .Select(MapToUserDto)
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<ICollection<AdminUserDto>> BrowseAdminDtoUsers(int skip, int take)
+    public async Task<ICollection<AdminUserDto>> BrowseAdminDtoUsers(int skip, int take, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Users
             .IgnoreQueryFilters()
@@ -143,7 +142,7 @@ public class UserRepository : IUserRepository
             .Take(take)
             .Select(MapToAdminUserDto)
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
     public void DeleteRefreshToken(RefreshToken token)
@@ -151,9 +150,9 @@ public class UserRepository : IUserRepository
         _dbContext.Entry(token).State = EntityState.Deleted;
     }
 
-    public async Task<bool> ExistsAsync(string email)
+    public async Task<bool> ExistsAsync(string email, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Users.AnyAsync(u => u.Email == email);
+        return await _dbContext.Users.AnyAsync(u => u.Email == email, cancellationToken);
     }
 
     public void Add(User user)
@@ -166,8 +165,8 @@ public class UserRepository : IUserRepository
         _dbContext.Users.Update(user);
     }
 
-    public async Task SaveChangesAsync()
+    public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

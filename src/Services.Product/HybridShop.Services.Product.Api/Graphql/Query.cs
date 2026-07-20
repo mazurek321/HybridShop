@@ -14,7 +14,8 @@ public class Query
         string? category = null,
         decimal? priceFrom = null,
         decimal? priceTo = null,
-        string? search = null
+        string? search = null,
+        CancellationToken cancellationToken = default
     )
     {
         var queryDto = new BrowseProductsQueryDto
@@ -27,17 +28,18 @@ public class Query
             Search = search
         };
 
-        return await productService.BrowseProductsAsync(queryDto);
+        return await productService.BrowseProductsAsync(queryDto, cancellationToken);
     }
 
     public async Task<ProductDto?> GetProductByIdAsync(
         [Service] ProductService productService,
-        Guid id
+        Guid id,
+        CancellationToken cancellationToken = default
     )
     {
         try
         {
-            return await productService.GetProductAsync(id);
+            return await productService.GetProductAsync(id, cancellationToken);
         }
         catch (Exception) 
         {

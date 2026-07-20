@@ -26,12 +26,12 @@ public class ProductController : ControllerBase
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> AddNewProduct([FromBody] AddNewProductDto dto)
+    public async Task<IActionResult> AddNewProduct([FromBody] AddNewProductDto dto, CancellationToken cancellationToken)
     {
         try
         {
             var userId = _context.Id;
-            var product = await _productService.AddProductAsync(dto, userId);
+            var product = await _productService.AddProductAsync(dto, userId, cancellationToken);
             return Ok(product); 
         }
         catch (InvalidProductException ex)
@@ -45,11 +45,11 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("{ProductId:guid}")]
-    public async Task<IActionResult> GetProduct([FromRoute] Guid ProductId)
+    public async Task<IActionResult> GetProduct([FromRoute] Guid ProductId, CancellationToken cancellationToken)
     {
         try
         {
-            var product = await _productService.GetProductAsync(ProductId);
+            var product = await _productService.GetProductAsync(ProductId, cancellationToken);
             return Ok(product); 
         }
         catch (ProductNotFoundException ex) 
@@ -63,11 +63,11 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("browse")]
-    public async Task<IActionResult> BrowseProducts([FromQuery] BrowseProductsQueryDto query)
+    public async Task<IActionResult> BrowseProducts([FromQuery] BrowseProductsQueryDto query, CancellationToken cancellationToken)
     {
         try
         {
-            var products = await _productService.BrowseProductsAsync(query);
+            var products = await _productService.BrowseProductsAsync(query, cancellationToken);
             return Ok(products); 
         }
         catch (Exception ex) 
@@ -78,13 +78,13 @@ public class ProductController : ControllerBase
 
     [Authorize]
     [HttpPut("{ProductId:guid}")]
-    public async Task<IActionResult> UpdateProduct([FromRoute] Guid ProductId, [FromBody] UpdateProductDto dto)
+    public async Task<IActionResult> UpdateProduct([FromRoute] Guid ProductId, [FromBody] UpdateProductDto dto, CancellationToken cancellationToken)
     {
         try
         {
             var userId = _context.Id;
             var userRole = _context.Role;
-            await _productService.UpdateProduct(ProductId, userId, userRole, dto);
+            await _productService.UpdateProduct(ProductId, userId, userRole, dto, cancellationToken);
             return Ok();
         }
         catch (ProductNotFoundException ex)
@@ -107,13 +107,13 @@ public class ProductController : ControllerBase
 
     [Authorize]
     [HttpDelete("{ProductId:guid}")]
-    public async Task<IActionResult> DeleteProduct([FromRoute] Guid ProductId)
+    public async Task<IActionResult> DeleteProduct([FromRoute] Guid ProductId, CancellationToken cancellationToken)
     {
         try
         {
             var userId = _context.Id;
             var userRole = _context.Role;
-            await _productService.DeleteProduct(ProductId, userId, userRole);
+            await _productService.DeleteProduct(ProductId, userId, userRole, cancellationToken);
             return NoContent();
         }
         catch (ProductNotFoundException ex)

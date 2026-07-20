@@ -25,6 +25,16 @@ public static class DependencyInjection
         services.AddGrpcClient<ProductGrpcService.ProductGrpcServiceClient>(options =>
         {
             options.Address = new Uri(authGrpcUrl!);
+        }).AddStandardResilienceHandler(options =>
+        {
+            options.Retry.MaxRetryAttempts = 3;
+            options.Retry.Delay = TimeSpan.FromMilliseconds(500);
+            options.Retry.BackoffType = Polly.DelayBackoffType.Exponential;
+
+            options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(3);
+
+            options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(10);
+            options.CircuitBreaker.FailureRatio = 0.5;
         });
 
         services.AddScoped<IShoppingCartRepository, RedisShoppingCartRepository>();

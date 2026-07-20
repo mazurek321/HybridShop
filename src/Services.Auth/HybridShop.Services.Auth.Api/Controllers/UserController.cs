@@ -6,7 +6,6 @@ using HybridShop.Services.Auth.Application.Exceptions;
 using HybridShop.Services.Auth.Application.Dto;
 using HybridShop.Services.Auth.Core.Exceptions;
 
-
 namespace HybridShop.Services.Auth.Api.Controllers;
 
 [ApiController]
@@ -27,12 +26,12 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> GetUserData([FromQuery] Guid? userId)
+    public async Task<IActionResult> GetUserData([FromQuery] Guid? userId, CancellationToken cancellationToken)
     {
         try
         {
             var id = userId.HasValue ? userId.Value : _context.Id;
-            var data = await _userService.GetUserDataAsync(id);
+            var data = await _userService.GetUserDataAsync(id, cancellationToken);
 
             return Ok(data);
         }
@@ -44,47 +43,47 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpGet("browse")]
-    public async Task<IActionResult> BrowseUsers([FromQuery] int skip = 0, int take = 10)
+    public async Task<IActionResult> BrowseUsers([FromQuery] int skip = 0, [FromQuery] int take = 10, CancellationToken cancellationToken = default)
     {
         try
         {        
-            var users = await _userService.BrowseUsersAsync(skip, take);
+            var users = await _userService.BrowseUsersAsync(skip, take, cancellationToken);
             return Ok(users);
         }
         catch(InvalidRangeException ex)
         {
-            return BadRequest(new {message = ex.Message});
+            return BadRequest(new { message = ex.Message });
         }
     }
 
     [Authorize]
     [HttpPut("update")]
-    public async Task<IActionResult> Update([FromBody] UpdateUserDto dto)
+    public async Task<IActionResult> Update([FromBody] UpdateUserDto dto, CancellationToken cancellationToken)
     {
         try
         {
             var userId = _context.Id;
-            await _userService.UpdateUserAsync(userId, dto); 
+            await _userService.UpdateUserAsync(userId, dto, cancellationToken); 
             return Ok();
         }
         catch(UserNotFoundException ex)
         {
-            return NotFound(new {message = ex.Message});
+            return NotFound(new { message = ex.Message });
         }
         catch(InvalidGenderException ex)
         {
-            return BadRequest(new {message = ex.Message});
+            return BadRequest(new { message = ex.Message });
         }
     }
 
     [Authorize]
     [HttpDelete("delete")]
-    public async Task<IActionResult> Delete()
+    public async Task<IActionResult> Delete(CancellationToken cancellationToken)
     {
         try
         {
             var userId = _context.Id;
-            await _userService.SoftDeleteUserAsync(userId);
+            await _userService.SoftDeleteUserAsync(userId, cancellationToken);
 
             return NoContent();
         }
@@ -97,5 +96,4 @@ public class UserController : ControllerBase
             return Conflict(new { message = ex.Message });
         }
     }
-
 }

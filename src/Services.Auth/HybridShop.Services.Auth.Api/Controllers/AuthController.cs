@@ -6,7 +6,6 @@ using BuildingBlocks.OpenApi.Context;
 using HybridShop.Services.Auth.Application.Exceptions;
 using HybridShop.Services.Auth.Core.Exceptions;
 
-
 namespace HybridShop.Services.Auth.Api.Controllers;
 
 [ApiController]
@@ -26,11 +25,11 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            await _authService.RegisterAsync(request);
+            await _authService.RegisterAsync(request, cancellationToken);
             return Ok();
         }
         catch (EmailAlreadyExistsException ex)
@@ -39,16 +38,16 @@ public class AuthController : ControllerBase
         }
         catch(InvalidGenderException ex)
         {
-            return BadRequest(new {message = ex.Message });
+            return BadRequest(new { message = ex.Message });
         }
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            var response = await _authService.LoginAsync(request);
+            var response = await _authService.LoginAsync(request, cancellationToken);
             return Ok(response);
         }
         catch (InvalidCredentialsException ex)
@@ -58,11 +57,11 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh([FromBody] RefreshRequest request)
+    public async Task<IActionResult> Refresh([FromBody] RefreshRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            var response = await _authService.RefreshAsync(request);
+            var response = await _authService.RefreshAsync(request, cancellationToken);
             return Ok(response);
         }
         catch (UserNotFoundException ex)
@@ -77,12 +76,12 @@ public class AuthController : ControllerBase
 
     [Authorize]
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout()
+    public async Task<IActionResult> Logout(CancellationToken cancellationToken)
     {
         try
         {
             var userId = _context.Id;
-            await _authService.LogoutAsync(userId);
+            await _authService.LogoutAsync(userId, cancellationToken);
             return Ok();
         }
         catch (UserNotFoundException ex)

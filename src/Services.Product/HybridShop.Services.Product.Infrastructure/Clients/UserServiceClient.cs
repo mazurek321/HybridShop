@@ -14,14 +14,19 @@ public class UserServiceClient : IUserServiceClient
         _grpcClient = grpcClient;
     }
 
-    public async Task<SellerDto?> GetSellerDetailsAsync(Guid sellerId)
+    public async Task<SellerDto?> GetSellerDetailsAsync(Guid sellerId, CancellationToken cancellationToken = default)
     {
         try
         {
-            var response = await _grpcClient.GetUserDetailsAsync(new UserRequest 
+            var request = new UserRequest 
             { 
                 Id = sellerId.ToString() 
-            });
+            };
+
+            var response = await _grpcClient.GetUserDetailsAsync(
+                request, 
+                cancellationToken: cancellationToken
+            );
 
             return new SellerDto
             {

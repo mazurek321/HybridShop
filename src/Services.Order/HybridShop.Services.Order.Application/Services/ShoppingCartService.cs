@@ -22,13 +22,13 @@ public class ShoppingCartService
         _productClient = productClient;
     }
 
-    public async Task<ShoppingCartDto> GetCartAsync(Guid userId)
+    public async Task<ShoppingCartDto> GetCartAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        var cart = await _repository.GetCartAsync(userId);
+        var cart = await _repository.GetCartAsync(userId, cancellationToken);
         if (cart is null)
         {
             var newCart = ShoppingCart.NewShoppingCart(userId);
-            await _repository.UpdateCartAsync(newCart);
+            await _repository.UpdateCartAsync(newCart, cancellationToken);
             return new ShoppingCartDto { UserId = userId, CartVersion = newCart.Version };
         }
 
@@ -42,11 +42,11 @@ public class ShoppingCartService
 
         foreach (var id in productIds)
         {
-            var productDetails = await _productClient.GetProductBySkuIdAsync(id);
+            var productDetails = await _productClient.GetProductBySkuIdAsync(id, cancellationToken);
             
             if (productDetails is null)
             {
-                var mainProducts = await _productClient.GetProductsByIdsAsync(new[] { id });
+                var mainProducts = await _productClient.GetProductsByIdsAsync(new[] { id }, cancellationToken);
                 productDetails = mainProducts.FirstOrDefault();
             }
 
@@ -78,20 +78,20 @@ public class ShoppingCartService
         };
     }
 
-    public async Task AddItemToCartAsync(Guid userId, AddCartItemDto dto)
+    public async Task AddItemToCartAsync(Guid userId, AddCartItemDto dto, CancellationToken cancellationToken = default)
     {
-        ProductExternalDto? product = await _productClient.GetProductBySkuIdAsync(dto.ProductId);
+        ProductExternalDto? product = await _productClient.GetProductBySkuIdAsync(dto.ProductId, cancellationToken);
 
         if (product is null)
         {
-            var externalProducts = await _productClient.GetProductsByIdsAsync(new[] { dto.ProductId });
+            var externalProducts = await _productClient.GetProductsByIdsAsync(new[] { dto.ProductId }, cancellationToken);
             product = externalProducts.FirstOrDefault();
         }
 
         if (product is null)
             throw new ProductNotFoundException(dto.ProductId);
 
-        var cart = await _repository.GetCartAsync(userId) ?? ShoppingCart.NewShoppingCart(userId);
+        var cart = await _repository.GetCartAsync(userId, cancellationToken) ?? ShoppingCart.NewShoppingCart(userId);
         var existingItem = cart.Items.FirstOrDefault(i => i.ProductId == dto.ProductId);
         
         int currentQuantityInCart = existingItem?.Quantity.Value ?? 0;
@@ -106,34 +106,34 @@ public class ShoppingCartService
             product.Price
         );
 
-        await _repository.UpdateCartAsync(cart);
+        await _repository.UpdateCartAsync(cart, cancellationToken);
     }
 
-    public async Task RemoveItemFromCartAsync(Guid userId, Guid productId)
+    public async Task RemoveItemFromCartAsync(Guid userId, Guid productId, CancellationToken cancellationToken = default)
     {
-        var cart = await _repository.GetCartAsync(userId);
+        var cart = await _repository.GetCartAsync(userId, cancellationToken);
         if (cart is null)
             throw new CartNotFoundException();
 
         cart.RemoveItem(productId);
-        await _repository.UpdateCartAsync(cart);
+        await _repository.UpdateCartAsync(cart, cancellationToken);
     }
 
-    public async Task ClearCartAsync(Guid userId)
+    public async Task ClearCartAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        var cart = await _repository.GetCartAsync(userId);
+        var cart = await _repository.GetCartAsync(userId, cancellationToken);
         if (cart is null)
             throw new CartNotFoundException();
 
-        await _repository.DeleteCartAsync(userId);
+        await _repository.DeleteCartAsync(userId, cancellationToken);
     }
 
-    public async Task SetDeliveryMethodAsync(Guid userId, SetDeliveryMethodDto dto)
+    public async Task SetDeliveryMethodAsync(Guid userId, SetDeliveryMethodDto dto, CancellationToken cancellationToken = default)
     {
         if (!Enum.IsDefined(typeof(DeliveryType), dto.DeliveryTypeId))
             throw new InvalidDeliveryTypeException();
 
-        var cart = await _repository.GetCartAsync(userId);
+        var cart = await _repository.GetCartAsync(userId, cancellationToken);
         if (cart is null)
             throw new CartNotFoundException();
 
@@ -141,7 +141,7 @@ public class ShoppingCartService
         var delivery = DeliveryMethod.ChooseDelivery(option.Name, option.Price);
         cart.SetDeliveryMethod(delivery);
 
-        await _repository.UpdateCartAsync(cart);
+        await _repository.UpdateCartAsync(cart, cancellationToken);
     }
 
     public Task<List<DeliveryOptionDto>> GetAvailableDeliveryMethodsAsync()
