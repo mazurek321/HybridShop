@@ -1,14 +1,14 @@
+using MassTransit;
+using HybridShop.BuildingBlocks.EventBus;
+using HybridShop.Services.Notification.Consumers;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenApi();
+builder.Services.AddEventBus(builder.Configuration, x =>
+{
+    x.AddConsumer<UserRegisteredConsumer>();
+    x.AddConsumer<OrderCreatedConsumer>();
+});
 
 var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
-
-app.MapGet("/test", () => Results.Ok("Działa z Notification Service przez Gateway!"));
-
 app.Run();

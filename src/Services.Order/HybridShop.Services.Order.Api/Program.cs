@@ -3,6 +3,7 @@ using HybridShop.BuildingBlocks.OpenApi.Auth;
 using dotenv.net;
 using HybridShop.Services.Order.Application;
 using HybridShop.Services.Order.Infrastructure;
+using HybridShop.BuildingBlocks.EventBus;
 
 string? currentDir = Directory.GetCurrentDirectory();
 string? envFilePath = null;
@@ -44,6 +45,8 @@ builder.Services.AddAuthServices(builder.Configuration);
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddEventBus(builder.Configuration);
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

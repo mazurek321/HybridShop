@@ -6,7 +6,7 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 COPY src/Services.Notification/HybridShop.Services.Notification.csproj src/Services.Notification/
-COPY BuildingBlocks/EventBus/HybridShop.BuildingBlocks.EventBus.csproj BuildingBlocks/EventBus/
+COPY BuildingBlocks/EventBus/EventBus.csproj BuildingBlocks/EventBus/
 
 RUN dotnet restore "src/Services.Notification/HybridShop.Services.Notification.csproj"
 COPY . .

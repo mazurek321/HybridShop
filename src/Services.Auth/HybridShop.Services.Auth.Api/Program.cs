@@ -3,6 +3,7 @@ using HybridShop.Services.Auth.Infrastructure;
 using HybridShop.BuildingBlocks.OpenApi;
 using HybridShop.BuildingBlocks.OpenApi.Auth;
 using HybridShop.Services.Auth.Api.Grpc;
+using HybridShop.BuildingBlocks.EventBus;
 using dotenv.net;
 
 string? currentDir = Directory.GetCurrentDirectory();
@@ -53,6 +54,8 @@ builder.Services.AddAuthServices(builder.Configuration);
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddEventBus(builder.Configuration);
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

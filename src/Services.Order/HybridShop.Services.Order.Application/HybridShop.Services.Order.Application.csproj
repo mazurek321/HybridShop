@@ -2,9 +2,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HybridShop.Services.Order.Core\HybridShop.Services.Order.Core.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\EventBus\EventBus.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MassTransit.Abstractions" Version="8.3.6" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.10" />
   </ItemGroup>
 

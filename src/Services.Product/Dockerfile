@@ -9,7 +9,7 @@ COPY src/Services.Product/HybridShop.Services.Product.Api/HybridShop.Services.Pr
 COPY src/Services.Product/HybridShop.Services.Product.Application/HybridShop.Services.Product.Application.csproj src/Services.Product/HybridShop.Services.Product.Application/
 COPY src/Services.Product/HybridShop.Services.Product.Core/HybridShop.Services.Product.Core.csproj src/Services.Product/HybridShop.Services.Product.Core/
 COPY src/Services.Product/HybridShop.Services.Product.Infrastructure/HybridShop.Services.Product.Infrastructure.csproj src/Services.Product/HybridShop.Services.Product.Infrastructure/
-COPY BuildingBlocks/EventBus/HybridShop.BuildingBlocks.EventBus.csproj BuildingBlocks/EventBus/
+COPY BuildingBlocks/EventBus/EventBus.csproj BuildingBlocks/EventBus/
 COPY BuildingBlocks/OpenApi/OpenApi.csproj BuildingBlocks/OpenApi/
 
 RUN dotnet restore "src/Services.Product/HybridShop.Services.Product.Api/HybridShop.Services.Product.Api.csproj"
