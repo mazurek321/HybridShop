@@ -8,6 +8,8 @@ using HybridShop.Services.Product.Core.Exceptions;
 
 namespace HybridShop.Services.Product.Api.Controllers;
 
+public record DeleteImageDto(string ImageUrl);
+
 [ApiController]
 [Route("api/product")]
 public class ProductController : ControllerBase
@@ -39,6 +41,127 @@ public class ProductController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
         catch (Exception ex) 
+        {
+            return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+        }
+    }
+
+    [Authorize]
+[HttpPost("{id:guid}/images")]
+public async Task<IActionResult> UploadProductImages(
+    Guid id, 
+    IFormFileCollection file, 
+    CancellationToken cancellationToken)
+{
+    if (file is null || !file.Any())
+    {
+        return BadRequest("Brak plików do przesłania.");
+    }
+
+    try
+    {
+        var userId = _context.Id;
+        var imageUrls = await _productService.AddImagesToProductAsync(userId, id, file.ToList(), cancellationToken);
+        return Ok(new { ImageUrls = imageUrls });
+    }
+    catch (ArgumentException ex)
+    {
+        return BadRequest(new { message = ex.Message });
+    }
+    catch (ProductNotFoundException ex)
+    {
+        return NotFound(new { message = ex.Message });
+    }
+    catch (DontHavePermissionsException)
+    {
+        return Forbid();
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+    }
+}
+
+[Authorize]
+[HttpPost("{id:guid}/variants/{skuId:guid}/images")]
+public async Task<IActionResult> UploadVariantImages(
+    Guid id, 
+    Guid skuId, 
+    IFormFileCollection file, 
+    CancellationToken cancellationToken)
+{
+    if (file is null || !file.Any())
+    {
+        return BadRequest("Brak plików do przesłania.");
+    }
+
+    try
+    {
+        var userId = _context.Id;
+        var imageUrls = await _productService.AddImagesToVariantAsync(userId, id, skuId, file.ToList(), cancellationToken);
+        return Ok(new { ImageUrls = imageUrls });
+    }
+    catch (ArgumentException ex)
+    {
+        return BadRequest(new { message = ex.Message });
+    }
+    catch (ProductNotFoundException ex)
+    {
+        return NotFound(new { message = ex.Message });
+    }
+    catch (DontHavePermissionsException)
+    {
+        return Forbid();
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+    }
+}
+
+    [Authorize]
+    [HttpDelete("{id:guid}/images")]
+    public async Task<IActionResult> DeleteProductImage(Guid id, [FromBody] DeleteImageDto dto, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var userId = _context.Id;
+            await _productService.DeleteProductImageAsync(userId, id, dto.ImageUrl, cancellationToken);
+            return NoContent();
+        }
+        catch (ProductNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (DontHavePermissionsException)
+        {
+            return Forbid();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+        }
+    }
+
+    [Authorize]
+    [HttpDelete("{id:guid}/variants/{skuId:guid}/images")]
+    public async Task<IActionResult> DeleteVariantImage(Guid id, Guid skuId, [FromBody] DeleteImageDto dto, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var userId = _context.Id;
+            await _productService.DeleteVariantImageAsync(userId, id, skuId, dto.ImageUrl, cancellationToken);
+            return NoContent();
+        }
+        catch (ProductNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (DontHavePermissionsException)
+        {
+            return Forbid();
+        }
+        catch (Exception ex)
         {
             return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
         }
@@ -91,7 +214,7 @@ public class ProductController : ControllerBase
         {
             return NotFound(new { message = ex.Message });
         }
-        catch (DontHavePermissionsException ex)
+        catch (DontHavePermissionsException)
         {
             return Forbid();
         }
@@ -120,7 +243,7 @@ public class ProductController : ControllerBase
         {
             return NotFound(new { message = ex.Message });
         }
-        catch (DontHavePermissionsException ex)
+        catch (DontHavePermissionsException)
         {
             return Forbid();
         }

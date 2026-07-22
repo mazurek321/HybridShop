@@ -4,6 +4,7 @@ using HybridShop.Services.Product.Core.Dto;
 using HybridShop.Services.Product.Core.Exceptions;
 using HybridShop.Services.Product.Core.Interfaces;
 using HybridShop.Services.Product.Core.Product;
+using Microsoft.AspNetCore.Http;
 
 namespace HybridShop.Services.Product.Application.Services;
 
@@ -11,14 +12,17 @@ public class ProductService
 {
     private readonly IProductRepository _productRepository;
     private readonly IUserServiceClient _userServiceClient;
+    private readonly IFileStorageService _fileStorageService;
 
     public ProductService(
         IProductRepository productRepository,
-        IUserServiceClient userServiceClient
+        IUserServiceClient userServiceClient,
+        IFileStorageService fileStorageService
     )
     {
         _productRepository = productRepository;
         _userServiceClient = userServiceClient;
+        _fileStorageService = fileStorageService;
     }
 
     public async Task<Core.Product.Product> AddProductAsync(AddNewProductDto dto, Guid userId, CancellationToken cancellationToken = default)
@@ -86,6 +90,84 @@ public class ProductService
         return await Task.WhenAll(tasks);
     }
 
+    public async Task<List<string>> AddImagesToProductAsync(Guid userId, Guid productId, List<IFormFile> files, CancellationToken cancellationToken = default)
+    {
+        var product = await _productRepository.GetByIdAsync(productId, cancellationToken);
+        if (product is null)
+            throw new ProductNotFoundException();
+        
+        if (product.SellerId != userId)
+            throw new DontHavePermissionsException();
+
+        var uploadedUrls = new List<string>();
+
+        foreach (var file in files)
+        {
+            if (file.Length == 0) continue;
+
+            var imageUrl = await _fileStorageService.UploadFileAsync(productId, file, cancellationToken);
+            product.AddImage(imageUrl);
+            uploadedUrls.Add(imageUrl);
+        }
+
+        await _productRepository.UpdateAsync(product, cancellationToken);
+        return uploadedUrls;
+    }
+
+    public async Task<List<string>> AddImagesToVariantAsync(Guid userId, Guid productId, Guid skuId, List<IFormFile> files, CancellationToken cancellationToken = default)
+    {
+        var product = await _productRepository.GetByIdAsync(productId, cancellationToken);
+        if (product is null)
+            throw new ProductNotFoundException();
+        
+        if (product.SellerId != userId)
+            throw new DontHavePermissionsException();
+
+        var uploadedUrls = new List<string>();
+
+        foreach (var file in files)
+        {
+            if (file.Length == 0) continue;
+
+            var imageUrl = await _fileStorageService.UploadFileAsync(productId, file, cancellationToken);
+            product.AddVariantImage(skuId, imageUrl);
+            uploadedUrls.Add(imageUrl);
+        }
+
+        await _productRepository.UpdateAsync(product, cancellationToken);
+        return uploadedUrls;
+    }
+
+    public async Task DeleteProductImageAsync(Guid userId, Guid productId, string imageUrl, CancellationToken cancellationToken = default)
+    {
+        var product = await _productRepository.GetByIdAsync(productId, cancellationToken);
+        if (product is null)
+            throw new ProductNotFoundException();
+
+        if (product.SellerId != userId)
+            throw new DontHavePermissionsException();
+
+        await _fileStorageService.DeleteFileAsync(imageUrl, cancellationToken);
+
+        product.RemoveImage(imageUrl);
+        await _productRepository.UpdateAsync(product, cancellationToken);
+    }
+
+    public async Task DeleteVariantImageAsync(Guid userId, Guid productId, Guid skuId, string imageUrl, CancellationToken cancellationToken = default)
+    {
+        var product = await _productRepository.GetByIdAsync(productId, cancellationToken);
+        if (product is null)
+            throw new ProductNotFoundException();
+
+        if (product.SellerId != userId)
+            throw new DontHavePermissionsException();
+
+        await _fileStorageService.DeleteFileAsync(imageUrl, cancellationToken);
+
+        product.RemoveVariantImage(skuId, imageUrl);
+        await _productRepository.UpdateAsync(product, cancellationToken);
+    }
+
     public async Task UpdateProduct(Guid productId, Guid userId, string role, UpdateProductDto dto, CancellationToken cancellationToken = default)
     {
         var product = await _productRepository.GetByIdAsync(productId, cancellationToken);
@@ -128,6 +210,19 @@ public class ProductService
         if (product.SellerId != userId && role != "Admin")
             throw new DontHavePermissionsException();
 
+        foreach (var img in product.Images)
+        {
+            await _fileStorageService.DeleteFileAsync(img, cancellationToken);
+        }
+
+        foreach (var variant in product.Variants)
+        {
+            foreach (var img in variant.Images)
+            {
+                await _fileStorageService.DeleteFileAsync(img, cancellationToken);
+            }
+        }
+
         product.Delete();
         await _productRepository.UpdateAsync(product, cancellationToken);
     }
@@ -144,12 +239,14 @@ public class ProductService
             Quantity = product.Quantity?.Value ?? 0,
             Category = product.Category?.Value.ToString() ?? string.Empty,
             Attributes = product.Attributes ?? new Dictionary<string, object>(),
+            Images = product.Images ?? new List<string>(),
             Variants = (product.Variants ?? new List<ProductVariant>()).Select(v => new ProductVariantDto
             {
                 SkuId = v.SkuId,
                 Price = v.Price?.Value ?? 0,
                 Quantity = v.Quantity?.Value ?? 0,
-                Attributes = v.Attributes ?? new Dictionary<string, object>()
+                Attributes = v.Attributes ?? new Dictionary<string, object>(),
+                Images = v.Images ?? new List<string>()
             }).ToList(),
             Seller = seller ?? new SellerDto
             {

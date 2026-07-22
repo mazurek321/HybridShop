@@ -10,6 +10,7 @@ public class Product
         Category = null!;
         Attributes = new Dictionary<string, object>();
         Variants = new List<ProductVariant>();
+        Images = new List<string>();
     }
 
     private Product(
@@ -25,7 +26,8 @@ public class Product
         bool isDeleted,
         ProductCategory category,
         Dictionary<string, object>? attributes,
-        List<ProductVariant>? variants
+        List<ProductVariant>? variants,
+        List<string>? images
     )
     {
         Id = id;
@@ -42,6 +44,7 @@ public class Product
         Category = category;
         Attributes = attributes ?? new Dictionary<string, object>();
         Variants = variants ?? new List<ProductVariant>();
+        Images = images ?? new List<string>();
     }
 
     public Guid Id { get; private set; }
@@ -58,6 +61,7 @@ public class Product
     public ProductCategory Category { get; private set; }
     public Dictionary<string, object> Attributes { get; private set; }
     public List<ProductVariant> Variants { get; private set; }
+    public List<string> Images { get; private set; }
 
     public static Product NewProduct(
         string title,
@@ -68,7 +72,8 @@ public class Product
         Guid sellerId,
         ProductCategory category,
         Dictionary<string, object>? attributes = null,
-        List<ProductVariant>? variants = null
+        List<ProductVariant>? variants = null,
+        List<string>? images = null
     )
     {
         return new Product(
@@ -84,8 +89,45 @@ public class Product
             false,
             category,
             attributes,
-            variants
+            variants,
+            images
         );
+    }
+
+    public void AddImage(string imageUrl)
+    {
+        Images.Add(imageUrl);
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void RemoveImage(string imageUrl)
+    {
+        Images.Remove(imageUrl);
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void AddVariantImage(Guid skuId, string imageUrl)
+    {
+        var variant = Variants.FirstOrDefault(v => v.SkuId == skuId);
+        if (variant is null)
+        {
+            throw new KeyNotFoundException($"Nie znaleziono wariantu o SkuId: {skuId}");
+        }
+
+        variant.AddImage(imageUrl);
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void RemoveVariantImage(Guid skuId, string imageUrl)
+    {
+        var variant = Variants.FirstOrDefault(v => v.SkuId == skuId);
+        if (variant is null)
+        {
+            throw new KeyNotFoundException($"Nie znaleziono wariantu o SkuId: {skuId}");
+        }
+
+        variant.RemoveImage(imageUrl);
+        UpdatedAt = DateTime.UtcNow;
     }
 
     public void Update(
@@ -116,3 +158,4 @@ public class Product
         UpdatedAt = DateTime.UtcNow;   
     }
 }
+

@@ -59,6 +59,11 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
 
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 104_857_600;
+});
+
 var app = builder.Build();
 
 app.MapOpenApi("/api/product/openapi/{documentName}.json");

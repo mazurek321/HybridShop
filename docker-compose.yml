@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -24,6 +26,35 @@ services:
     container_name: hybridshop-redis
     ports:
       - "${PORT_REDIS}:6379"
+  
+  minio:
+    image: minio/minio
+    container_name: hybridshop-minio
+    ports:
+      - "${PORT_MINIO_API:-9000}:9000"
+      - "${PORT_MINIO_CONSOLE:-9001}:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    command: server /data --console-address ":9001"
+    restart: always
+
+  minio-init:
+    image: minio/mc
+    container_name: hybridshop-minio-init
+    depends_on:
+      - minio
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
+    entrypoint: >
+      sh -c "
+      until mc alias set myminio http://minio:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD; do echo 'Czekam na MinIO...'; sleep 1; done;
+      mc mb myminio/$$MINIO_BUCKET_NAME --ignore-existing;
+      mc anonymous set download myminio/$$MINIO_BUCKET_NAME;
+      exit 0;
+      "
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -83,10 +114,15 @@ services:
       - Jwt__Issuer=${JWT_ISSUER}
       - Jwt__Audience=${JWT_AUDIENCE}
       - InternalServices__AuthGrpcUrl=${InternalServices__AuthGrpcUrl}
+      - Minio__Endpoint=minio:9000
+      - Minio__AccessKey=${MINIO_ROOT_USER}
+      - Minio__SecretKey=${MINIO_ROOT_PASSWORD}
+      - Minio__BucketName=${MINIO_BUCKET_NAME}
     depends_on:
       - mongo
       - redis
       - auth-service
+      - minio
 
   order-service:
     image: hybridshop-order
@@ -132,3 +168,4 @@ services:
 volumes:
   postgres_data:
   mongo_data:
+  minio_data:

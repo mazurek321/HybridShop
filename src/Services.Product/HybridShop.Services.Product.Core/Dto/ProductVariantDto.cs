@@ -6,4 +6,5 @@ public class ProductVariantDto
     public decimal Price { get; set; }
     public int Quantity { get; set; }
     public Dictionary<string, object> Attributes { get; set; } = null!;
+    public List<string> Images { get; set; } = new();
 }
