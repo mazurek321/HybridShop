@@ -6,6 +6,9 @@ public interface IProductRepository
 {   
     Task AddAsync(Core.Product.Product product, CancellationToken cancellationToken = default);
     Task<Core.Product.Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Core.Product.Product>> GetByIdsAsync(
+        IEnumerable<Guid> ids, 
+        CancellationToken cancellationToken = default);
     Task<Core.Product.Product?> GetBySkuIdAsync(Guid skuId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Core.Product.Product>> BrowseProductsAsync(
         int skip, 

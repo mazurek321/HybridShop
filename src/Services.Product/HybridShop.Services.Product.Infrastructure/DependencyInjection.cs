@@ -48,11 +48,12 @@ public static class DependencyInjection
         });
 
         services.AddScoped<ProductRepository>();
-        services.AddScoped<IProductRepository>(sp =>
-            new CachedProductRepository(
-                sp.GetRequiredService<ProductRepository>(),
-                sp.GetRequiredService<IDistributedCache>()
-            ));
+        // services.AddScoped<IProductRepository>(sp =>
+        //     new CachedProductRepository(
+        //         sp.GetRequiredService<ProductRepository>(),
+        //         sp.GetRequiredService<IDistributedCache>()
+        //     ));
+        services.AddScoped<IProductRepository, ProductRepository>();
 
         services.AddScoped<IUserServiceClient, UserServiceClient>();
 

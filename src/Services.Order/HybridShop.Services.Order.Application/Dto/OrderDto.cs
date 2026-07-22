@@ -1,15 +1,15 @@
 namespace HybridShop.Services.Order.Application.Dto;
-public class OrderDto
+
+public record OrderDto
 {
-    public Guid Id { get; set; }
-    public Guid BuyerId { get; set; }
-    public Guid SellerId { get; set; }
-    public List<OrderItemDto> Items { get; set; } = new();
-    public decimal DeliveryPrice { get; set; }
-    public string DeliveryName { get; set; } = string.Empty;
-    public decimal Total { get; set; }
-    public string ShippingAddress { get; set; } = string.Empty;
-    public string Status { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public Guid Id { get; init; }
+    public Guid BuyerId { get; init; }
+    public List<OrderItemDto> Items { get; init; } = new();
+    public decimal DeliveryPrice { get; init; }
+    public string DeliveryName { get; init; } = string.Empty;
+    public decimal Total { get; init; }
+    public string ShippingAddress { get; init; } = string.Empty;
+    public string Status { get; init; } = string.Empty;
+    public DateTime CreatedAt { get; init; }
+    public DateTime UpdatedAt { get; init; }
 }

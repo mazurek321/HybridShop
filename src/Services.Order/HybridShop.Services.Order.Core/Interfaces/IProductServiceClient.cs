@@ -4,6 +4,6 @@ namespace HybridShop.Services.Order.Core.Interfaces;
 
 public interface IProductServiceClient
 {
-    Task<IEnumerable<ProductExternalDto>> GetProductsByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken = default);
-    Task<ProductExternalDto?> GetProductBySkuIdAsync(Guid skuId, CancellationToken cancellationToken = default);
+    Task<List<ProductExternalDto>> GetProductsByIdsAsync(IEnumerable<(Guid ProductId, Guid? SkuId)> items, CancellationToken cancellationToken = default);
+    Task<ProductExternalDto?> GetProductBySkuIdAsync(Guid productId, Guid? skuId, CancellationToken cancellationToken = default);
 }

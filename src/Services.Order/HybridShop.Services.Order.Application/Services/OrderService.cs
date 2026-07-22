@@ -3,8 +3,6 @@ using HybridShop.Services.Order.Application.Exceptions;
 using HybridShop.Services.Order.Core.Interfaces;
 using HybridShop.Services.Order.Core.Models.Dto;
 using HybridShop.Services.Order.Core.Models.Order;
-using HybridShop.BuildingBlocks.EventBus.Events;
-using MassTransit;
 
 namespace HybridShop.Services.Order.Application.Services;
 
@@ -14,64 +12,47 @@ public class OrderService
     private readonly IOrderRepository _orderRepository;
     private readonly IProductServiceClient _productClient;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IPublishEndpoint _publishEndpoint;
 
     public OrderService(
         IShoppingCartRepository cartRepository,
         IOrderRepository orderRepository,
         IProductServiceClient productClient,
-        IUnitOfWork unitOfWork,
-        IPublishEndpoint publishEndpoint
+        IUnitOfWork unitOfWork
     )
     {
         _cartRepository = cartRepository;
         _orderRepository = orderRepository;
         _productClient = productClient;
         _unitOfWork = unitOfWork;
-        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<List<OrderDto>> CreateOrdersFromCartAsync(Guid userId, CreateOrderDto dto, CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrEmpty(dto.ShippingAddress))
+            throw new InvalidDeliveryAddressException();
+
         var cart = await _cartRepository.GetCartAsync(userId, cancellationToken);
         if (cart is null || !cart.Items.Any())
             throw new CartIsEmptyOrDoesntExistException();
 
+        if (cart.Delivery is null)
+            throw new InvalidOperationException("Delivery method must be set before creating an order.");
+
         if (cart.Version != dto.CartVersion)
             throw new CartConcurrencyException();
 
-        if (cart.Delivery is null)
-            throw new InvalidDeliveryAddressException();
+        var requestItems = cart.Items.Select(i => (i.ProductId, i.SkuId)).ToList();
+        var fetchedProducts = await _productClient.GetProductsByIdsAsync(requestItems, cancellationToken);
 
-        var productIds = cart.Items.Select(i => i.ProductId).ToList();
-        var productsDict = new Dictionary<Guid, ProductExternalDto>();
-
-        foreach (var id in productIds)
-        {
-            var productDetails = await _productClient.GetProductBySkuIdAsync(id, cancellationToken);
-            
-            if (productDetails is null)
-            {
-                var mainProducts = await _productClient.GetProductsByIdsAsync(new[] { id }, cancellationToken);
-                productDetails = mainProducts.FirstOrDefault();
-            }
-
-            if (productDetails is not null)
-            {
-                productsDict[id] = productDetails;
-            }
-        }
+        var productsDict = fetchedProducts
+            .Where(p => p.ProductId != Guid.Empty)
+            .GroupBy(p => p.ProductId)
+            .ToDictionary(g => g.Key, g => g.First());
 
         foreach (var item in cart.Items)
         {
-            if (!productsDict.TryGetValue(item.ProductId, out var product))
+            if (!productsDict.ContainsKey(item.ProductId))
                 throw new ProductNotFoundException(item.ProductId);
-
-            if (product.Price != item.Price)
-                throw new InvalidPriceException();
-                
-            if (product.Quantity < item.Quantity.Value)
-                throw new InvalidQuantityException();
         }
 
         var finalCheckCart = await _cartRepository.GetCartAsync(userId, cancellationToken);
@@ -80,36 +61,47 @@ public class OrderService
 
         await _cartRepository.DeleteCartAsync(userId, cancellationToken);
 
-        var itemsBySeller = cart.Items.GroupBy(item => productsDict[item.ProductId].SellerId);
-        var ordersToCreate = new List<Core.Models.Order.Order>();
+        var groupedItems = cart.Items.GroupBy(i =>
+        {
+            var product = productsDict[i.ProductId];
+            return product.SellerId != Guid.Empty ? product.SellerId : i.SellerId;
+        });
+
+        var createdOrders = new List<Core.Models.Order.Order>();
+
+        foreach (var group in groupedItems)
+        {
+            var sellerItems = group.Select(i =>
+            {
+                var product = productsDict[i.ProductId];
+                return OrderItem.AddOrderItem(
+                    i.ProductId,
+                    product.Title,
+                    i.Quantity.Value,
+                    product.Price,
+                    group.Key
+                );
+            }).ToList();
+
+            var order = Core.Models.Order.Order.Create(
+                userId,
+                sellerItems,
+                cart.Delivery.Price,
+                cart.Delivery.Name,
+                dto.ShippingAddress
+            );
+
+            createdOrders.Add(order);
+        }
 
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
         try
         {
-            foreach (var group in itemsBySeller)
+            foreach (var order in createdOrders)
             {
-                var sellerId = group.Key;
-                var orderItems = group.Select(i => OrderItem.AddOrderItem(
-                    i.ProductId,
-                    productsDict[i.ProductId].Title,
-                    i.Quantity.Value,
-                    i.Price
-                )).ToList();
-
-                var order = Core.Models.Order.Order.Create(
-                    userId,
-                    sellerId,
-                    orderItems,
-                    cart.Delivery.Price,
-                    cart.Delivery.Name,
-                    dto.ShippingAddress
-                );
-
                 await _orderRepository.AddAsync(order, cancellationToken);
-                ordersToCreate.Add(order);
             }
-
             await _unitOfWork.CommitTransactionAsync(cancellationToken);
         }
         catch
@@ -118,15 +110,7 @@ public class OrderService
             throw;
         }
 
-        foreach (var order in ordersToCreate)
-        {
-            await _publishEndpoint.Publish(
-                new OrderCreatedEvent(order.Id, order.BuyerId, "user@example.com", order.Total),
-                cancellationToken
-            );
-        }
-
-        return ordersToCreate.Select(MapToDto).ToList();
+        return createdOrders.Select(MapToDto).ToList();
     }
 
     public async Task<IEnumerable<OrderDto>> GetBuyerOrdersAsync(Guid buyerId, Guid currentUserId, CancellationToken cancellationToken = default)
@@ -144,16 +128,39 @@ public class OrderService
         return orders.Select(MapToDto);
     }
 
-    public async Task UpdateOrderStatusAsync(Guid orderId, OrderStatus status, Guid currentUserId, bool isUserSeller, CancellationToken cancellationToken = default)
+    public async Task UpdateOrderItemStatusAsync(Guid orderId, Guid orderItemId, OrderStatus status, Guid currentUserId, CancellationToken cancellationToken = default)
     {
         var order = await _orderRepository.GetByIdAsync(orderId, cancellationToken);
         if (order is null)
             throw new OrderNotFoundException();
 
-        if (!isUserSeller || order.SellerId != currentUserId)
+        var item = order.Items.FirstOrDefault(i => i.Id == orderItemId);
+        if (item is null)
+            throw new OrderItemNotFoundException();
+
+        var isSeller = item.SellerId == currentUserId;
+        var isBuyerCancelling = order.BuyerId == currentUserId 
+                             && item.Status == OrderStatus.Placed 
+                             && status == OrderStatus.Cancelled;
+
+        if (!isSeller && !isBuyerCancelling)
             throw new UnauthorizedException();
 
-        order.UpdateStatus(status);
+        item.UpdateStatus(status);
+
+        if (order.Items.All(i => i.Status == OrderStatus.Cancelled))
+        {
+            order.UpdateStatus(OrderStatus.Cancelled);
+        }
+        else if (order.Items.All(i => i.Status == OrderStatus.Completed))
+        {
+            order.UpdateStatus(OrderStatus.Completed);
+        }
+        else if (order.Items.Any(i => i.Status == OrderStatus.Shipped))
+        {
+            order.UpdateStatus(OrderStatus.Shipped);
+        }
+
         await _orderRepository.UpdateAsync(order, cancellationToken);
     }
 
@@ -163,7 +170,6 @@ public class OrderService
         {
             Id = order.Id,
             BuyerId = order.BuyerId,
-            SellerId = order.SellerId,
             DeliveryPrice = order.DeliveryPrice,
             DeliveryName = order.DeliveryName,
             Total = order.Total,
@@ -172,10 +178,13 @@ public class OrderService
             CreatedAt = order.CreatedAt,
             Items = order.Items?.Select(i => new OrderItemDto
             {
+                Id = i.Id,
                 ProductId = i.ProductId,
                 Title = i.Title,
                 Quantity = i.Quantity,
-                Price = i.Price
+                Price = i.Price,
+                SellerId = i.SellerId,
+                Status = i.Status.ToString()
             }).ToList() ?? new List<OrderItemDto>()
         };
     }

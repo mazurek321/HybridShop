@@ -45,7 +45,6 @@ builder.Services.AddAuthServices(builder.Configuration);
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
-
 builder.Services.AddEventBus(builder.Configuration);
 
 builder.Services.AddControllers()

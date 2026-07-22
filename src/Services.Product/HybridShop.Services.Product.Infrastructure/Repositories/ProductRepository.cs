@@ -20,20 +20,35 @@ public class ProductRepository : IProductRepository
 
     public async Task<Core.Product.Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var filter = Builders<Core.Product.Product>.Filter.Eq(p => p.Id, id);
+        var builder = Builders<Core.Product.Product>.Filter;
+        var filter = builder.Eq(p => p.Id, id) & builder.Eq(p => p.IsDeleted, false);
 
         return await _dbContext.Find(filter).FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Core.Product.Product>> GetByIdsAsync(
+        IEnumerable<Guid> ids, 
+        CancellationToken cancellationToken = default)
+    {
+        var distinctIds = ids.Distinct().ToList();
+        if (!distinctIds.Any())
+            return Enumerable.Empty<Core.Product.Product>();
+
+        var builder = Builders<Core.Product.Product>.Filter;
+        var filter = builder.In(p => p.Id, distinctIds) & builder.Eq(p => p.IsDeleted, false);
+
+        return await _dbContext.Find(filter).ToListAsync(cancellationToken);
     }
 
     public async Task<Core.Product.Product?> GetBySkuIdAsync(Guid skuId, CancellationToken cancellationToken = default)
     {
-        var filter = Builders<Core.Product.Product>.Filter.ElemMatch(
-            p => p.Variants,
-            v => v.SkuId == skuId
-        );
+        var builder = Builders<Core.Product.Product>.Filter;
+        var filter = builder.Eq(p => p.IsDeleted, false) & 
+                     builder.ElemMatch(p => p.Variants, v => v.SkuId == skuId);
 
         return await _dbContext.Find(filter).FirstOrDefaultAsync(cancellationToken);
     }
+    
 
     public async Task<IEnumerable<Core.Product.Product>> BrowseProductsAsync(
         int skip, 

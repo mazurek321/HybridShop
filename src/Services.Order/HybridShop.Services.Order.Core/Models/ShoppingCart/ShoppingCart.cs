@@ -43,14 +43,17 @@ public class ShoppingCart
         return new ShoppingCart(userId) { Version = Guid.NewGuid() };
     }
 
-    public void AddItem(Guid productId, Quantity quantity, decimal price)
+    public void AddItem(Guid productId, Guid? skuId, Quantity quantity, decimal price, Guid sellerId)
     {
-        var existingItem = Items.FirstOrDefault(i => i.ProductId == productId);
-
-        if(existingItem is not null)
-            existingItem.UpdateQuantity(quantity);
+        var existingItem = Items.FirstOrDefault(i => i.ProductId == productId && i.SkuId == skuId);
+        if (existingItem is not null)
+        {
+            existingItem.UpdateQuantity(new Quantity(existingItem.Quantity.Value + quantity.Value));
+        }
         else
-            Items.Add(CartItem.NewCartItem(productId, quantity, price));
+        {
+            Items.Add(CartItem.NewCartItem(productId, skuId, quantity, price, sellerId));
+        }
 
         Version = Guid.NewGuid();
         RecalculateTotal();

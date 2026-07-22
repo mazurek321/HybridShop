@@ -7,6 +7,7 @@ WORKDIR /src
 
 COPY src/Services.Notification/HybridShop.Services.Notification.csproj src/Services.Notification/
 COPY BuildingBlocks/EventBus/EventBus.csproj BuildingBlocks/EventBus/
+COPY BuildingBlocks/OpenApi/OpenApi.csproj BuildingBlocks/OpenApi/  
 
 RUN dotnet restore "src/Services.Notification/HybridShop.Services.Notification.csproj"
 COPY . .
