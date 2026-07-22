@@ -1,8 +1,10 @@
+using HybridShop.BuildingBlocks.EventBus.Events;
 using HybridShop.Services.Order.Application.Dto;
 using HybridShop.Services.Order.Application.Exceptions;
 using HybridShop.Services.Order.Core.Interfaces;
 using HybridShop.Services.Order.Core.Models.Dto;
 using HybridShop.Services.Order.Core.Models.Order;
+using MassTransit;
 
 namespace HybridShop.Services.Order.Application.Services;
 
@@ -12,21 +14,24 @@ public class OrderService
     private readonly IOrderRepository _orderRepository;
     private readonly IProductServiceClient _productClient;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     public OrderService(
         IShoppingCartRepository cartRepository,
         IOrderRepository orderRepository,
         IProductServiceClient productClient,
-        IUnitOfWork unitOfWork
+        IUnitOfWork unitOfWork,
+        IPublishEndpoint publishEndpoint
     )
     {
         _cartRepository = cartRepository;
         _orderRepository = orderRepository;
         _productClient = productClient;
         _unitOfWork = unitOfWork;
+        _publishEndpoint = publishEndpoint;
     }
 
-    public async Task<List<OrderDto>> CreateOrdersFromCartAsync(Guid userId, CreateOrderDto dto, CancellationToken cancellationToken = default)
+    public async Task<List<OrderDto>> CreateOrdersFromCartAsync(Guid userId, string buyerEmail, CreateOrderDto dto, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(dto.ShippingAddress))
             throw new InvalidDeliveryAddressException();
@@ -102,12 +107,25 @@ public class OrderService
             {
                 await _orderRepository.AddAsync(order, cancellationToken);
             }
+
             await _unitOfWork.CommitTransactionAsync(cancellationToken);
         }
         catch
         {
             await _unitOfWork.RollbackTransactionAsync(cancellationToken);
             throw;
+        }
+
+        foreach (var order in createdOrders)
+        {
+            var sellerId = order.Items.First().SellerId;
+            await _publishEndpoint.Publish(new OrderCreatedEvent(
+                order.Id,
+                order.BuyerId,
+                sellerId,
+                buyerEmail,
+                order.Total
+            ), cancellationToken);
         }
 
         return createdOrders.Select(MapToDto).ToList();

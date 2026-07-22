@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Test SignalR Notifications</title>
+    <script src="https://unpkg.com/@microsoft/signalr@8.0.0/dist/browser/signalr.min.js"></script>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 30px; background: #0f172a; color: #f8fafc; }
+        .card { background: #1e293b; padding: 24px; border-radius: 12px; max-width: 600px; margin: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        h2 { margin-top: 0; color: #38bdf8; }
+        label { display: block; margin-top: 12px; font-weight: bold; font-size: 14px; color: #94a3b8; }
+        input { width: 100%; padding: 10px; margin-top: 6px; background: #0f172a; color: #fff; border: 1px solid #334155; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; margin-top: 18px; padding: 12px; background: #0284c7; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #0369a1; }
+        #log { margin-top: 20px; padding: 12px; background: #020617; border: 1px solid #1e293b; border-radius: 6px; height: 250px; overflow-y: auto; font-family: monospace; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>🚀 SignalR Test Hub</h2>
+    
+    <label>URL Hub-a:</label>
+    <input type="text" id="hubUrl" value="http://localhost:5000/hubs/notifications" />
+    
+    <label>Token JWT (Sprzedawca):</label>
+    <input type="text" id="jwtToken" placeholder="Wklej token JWT..." />
+    
+    <button onclick="connect()">Połącz z SignalR</button>
+
+    <label>Logi zdarzeń:</label>
+    <div id="log"></div>
+</div>
+
+<script>
+    let connection = null;
+
+    function appendLog(message, isError = false) {
+        const logDiv = document.getElementById("log");
+        const entry = document.createElement("div");
+        entry.style.color = isError ? "#f87171" : "#4ade80";
+        entry.style.marginBottom = "6px";
+        entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+        logDiv.appendChild(entry);
+        logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    async function connect() {
+        const token = document.getElementById("jwtToken").value.trim();
+        const hubUrl = document.getElementById("hubUrl").value.trim();
+
+        if (!token) {
+            alert("Proszę podać token JWT!");
+            return;
+        }
+
+        if (connection) {
+            await connection.stop();
+        }
+
+        connection = new signalR.HubConnectionBuilder()
+            .withUrl(hubUrl, {
+                accessTokenFactory: () => token,
+                skipNegotiation: false,
+                transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling
+            })
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on("ReceiveOrderNotification", (data) => {
+            console.log("🔥 [SIGNALR] NOWE ZAMÓWIENIE!", data);
+            appendLog(`🔔 NOWE ZAMÓWIENIE! Od: ${data.buyerEmail} | Kwota: ${data.total} PLN | ID: ${data.orderId}`);
+            alert(`Ktoś kupił Twój przedmiot!\nKupujący: ${data.buyerEmail}\nKwota: ${data.total} PLN`);
+        });
+
+        try {
+            await connection.start();
+            console.log("🚀 POŁĄCZONO Z SIGNALR!");
+            appendLog("🚀 POŁĄCZONO Z SIGNALR! Czekam na zamówienia...");
+        } catch (err) {
+            console.error("❌ Błąd:", err);
+            appendLog(`❌ Błąd połączenia: ${err.message}`, true);
+        }
+    }
+</script>
+
+</body>
+</html>

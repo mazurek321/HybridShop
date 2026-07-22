@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace HybridShop.Services.Notification.Hubs;
 
-public class NotificationHub : Hub
+[Authorize]
+public class NotificationHub : Hub<INotificationClient>
 {
     public override async Task OnConnectedAsync()
     {

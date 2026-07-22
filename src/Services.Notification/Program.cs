@@ -5,10 +5,42 @@ using HybridShop.Grpc;
 using HybridShop.BuildingBlocks.OpenApi;
 using HybridShop.BuildingBlocks.OpenApi.Auth;
 using HybridShop.Services.Notification.Hubs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("SignalRCors", policy =>
+    {
+        policy.SetIsOriginAllowed(_ => true) 
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 builder.Services.AddAuthServices(builder.Configuration);
+
+builder.Services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+{
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/notifications"))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        }
+    };
+});
+
 builder.Services.AddSignalR();
 
 builder.Services.AddEventBus(builder.Configuration, x =>
@@ -27,6 +59,8 @@ builder.Services.AddGrpcClient<UserGrpcService.UserGrpcServiceClient>(options =>
 });
 
 var app = builder.Build();
+
+app.UseCors("SignalRCors");
 
 app.UseAuthentication(); 
 app.UseAuthorization();
