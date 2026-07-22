@@ -29,7 +29,9 @@ public class OrderController : ControllerBase
         try
         {
             var userId = _context.Id;
-            var orders = await _orderService.CreateOrdersFromCartAsync(userId, dto, cancellationToken);
+            var userEmail = _context.Email ?? string.Empty;
+
+            var orders = await _orderService.CreateOrdersFromCartAsync(userId, userEmail, dto, cancellationToken);
             return Ok(orders);
         }
         catch (CartConcurrencyException ex)

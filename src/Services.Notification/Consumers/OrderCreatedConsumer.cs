@@ -7,9 +7,9 @@ namespace HybridShop.Services.Notification.Consumers;
 
 public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
 {
-    private readonly IHubContext<NotificationHub> _hubContext;
+    private readonly IHubContext<NotificationHub, INotificationClient> _hubContext;
 
-    public OrderCreatedConsumer(IHubContext<NotificationHub> hubContext)
+    public OrderCreatedConsumer(IHubContext<NotificationHub, INotificationClient> hubContext)
     {
         _hubContext = hubContext;
     }
@@ -18,14 +18,15 @@ public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
     {
         var message = context.Message;
 
+        var notification = new OrderNotificationDto(
+            message.OrderId,
+            message.BuyerEmail,
+            message.TotalAmount,
+            DateTime.UtcNow
+        );
+
         await _hubContext.Clients
             .User(message.SellerId.ToString())
-            .SendAsync("ReceiveOrderNotification", new
-            {
-                OrderId = message.OrderId,
-                BuyerEmail = message.BuyerEmail,
-                Total = message.TotalAmount,
-                CreatedAt = DateTime.UtcNow
-            });
+            .ReceiveOrderNotification(notification);
     }
 }

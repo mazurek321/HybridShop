@@ -43,4 +43,27 @@ public class UserContext(IHttpContextAccessor httpContextAccessor) : IUserContex
             return role;
         }
     }
+
+    public string Email
+    {
+        get
+        {
+            var user = httpContextAccessor.HttpContext?.User;
+            
+            if (user?.Identity is null || !user.Identity.IsAuthenticated)
+            {
+                throw new UnauthorizedAccessException("User is not authenticated.");
+            }
+
+            var email = user.FindFirst(ClaimTypes.Email)?.Value 
+                       ?? user.FindFirst("email")?.Value;
+
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new UnauthorizedAccessException("User email claim is missing.");
+            }
+
+            return email;
+        }
+    }
 }
