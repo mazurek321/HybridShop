@@ -56,7 +56,6 @@ public static class DependencyInjection
         services.AddScoped<IProductRepository, ProductRepository>();
 
         services.AddScoped<IUserServiceClient, UserServiceClient>();
-
         return services;
     }
 }

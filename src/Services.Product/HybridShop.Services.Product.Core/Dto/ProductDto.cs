@@ -12,6 +12,7 @@ public class ProductDto
     public string Category { get; set; } = null!;
     public Dictionary<string, object> Attributes { get; set; } = null!;
     public List<ProductVariantDto> Variants { get; set; } = new();
+    public List<string> Images { get; set; } = new();
     public bool IsDeleted { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
