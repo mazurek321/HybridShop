@@ -1,9 +1,12 @@
 namespace HybridShop.Services.Order.Application.Dto;
 
-public class OrderItemDto
+public record OrderItemDto
 {
-    public Guid ProductId { get; set; }
-    public string Title { get; set; } = string.Empty;
-    public int Quantity { get; set; }
-    public decimal Price { get; set; }
+    public Guid Id { get; init; }
+    public Guid ProductId { get; init; }
+    public string Title { get; init; } = string.Empty;
+    public int Quantity { get; init; }
+    public decimal Price { get; init; }
+    public Guid SellerId { get; init; }
+    public string Status { get; init; } = string.Empty;
 }

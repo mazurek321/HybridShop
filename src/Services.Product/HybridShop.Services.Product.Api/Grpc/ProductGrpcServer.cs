@@ -2,13 +2,13 @@ using Grpc.Core;
 using HybridShop.Services.Product.Core.Interfaces;
 using HybridShop.Services.Product.Grpc;
 
-namespace HybridShop.Services.Product.Api.Grpc;
+namespace HybridShop.Services.Product.Infrastructure.Grpc;
 
-public class ProductGrpcServer : ProductGrpcService.ProductGrpcServiceBase
+public class ProductGrpcServerService : ProductGrpcService.ProductGrpcServiceBase
 {
     private readonly IProductRepository _productRepository;
 
-    public ProductGrpcServer(IProductRepository productRepository)
+    public ProductGrpcServerService(IProductRepository productRepository)
     {
         _productRepository = productRepository;
     }
@@ -17,67 +17,96 @@ public class ProductGrpcServer : ProductGrpcService.ProductGrpcServiceBase
         GetProductsByIdsRequest request, 
         ServerCallContext context)
     {
-        var stringIds = request.ProductIds
-            .Where(id => !string.IsNullOrWhiteSpace(id))
-            .ToList();
-
-        var guids = stringIds
-            .Select(id => Guid.TryParse(id, out var g) ? g : Guid.Empty)
-            .Where(g => g != Guid.Empty)
-            .ToList();
-
-        var products = new List<Core.Product.Product>();
-
-        foreach (var id in guids)
+        if (request.Items == null || !request.Items.Any())
         {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product is not null)
-            {
-                products.Add(product);
-            }
+            return new GetProductsByIdsResponse();
         }
+
+        var parsedItems = new List<(Guid ProductId, Guid? SkuId)>();
+
+        foreach (var item in request.Items)
+        {
+            if (!Guid.TryParse(item.ProductId, out var prodId))
+            {
+                throw new RpcException(new Status(StatusCode.InvalidArgument, $"Invalid Product ID format: {item.ProductId}"));
+            }
+
+            Guid? skuId = null;
+            if (!string.IsNullOrWhiteSpace(item.SkuId))
+            {
+                if (!Guid.TryParse(item.SkuId, out var parsedSku))
+                {
+                    throw new RpcException(new Status(StatusCode.InvalidArgument, $"Invalid SKU ID format: {item.SkuId}"));
+                }
+                skuId = parsedSku;
+            }
+
+            parsedItems.Add((prodId, skuId));
+        }
+
+        var productIdsToFetch = parsedItems.Select(x => x.ProductId).Distinct().ToList();
+        var products = await _productRepository.GetByIdsAsync(productIdsToFetch, context.CancellationToken);
+
+        var productDict = products
+            .GroupBy(p => p.Id.ToString().ToLowerInvariant())
+            .ToDictionary(g => g.Key, g => g.First());
 
         var response = new GetProductsByIdsResponse();
-        
-        response.Products.AddRange(products.Select(p => new ProductGrpcModel
+
+        foreach (var item in parsedItems)
         {
-            Id = p.Id.ToString(),
-            Title = p.Title,
-            Price = (double)p.Price.Value,
-            Quantity = p.Quantity.Value,
-            SellerId = p.SellerId.ToString()
-        }));
+            var lookupKey = item.ProductId.ToString().ToLowerInvariant();
+
+            if (!productDict.TryGetValue(lookupKey, out var product))
+            {
+                throw new RpcException(new Status(StatusCode.NotFound, $"Product with ID '{item.ProductId}' was not found."));
+            }
+
+            bool hasVariants = product.Variants is not null && product.Variants.Any();
+
+            if (hasVariants && !item.SkuId.HasValue)
+            {
+                throw new RpcException(new Status(
+                    StatusCode.InvalidArgument, 
+                    $"Product '{item.ProductId}' has variants. You must provide a valid SkuId."));
+            }
+
+            Guid? finalSkuId = item.SkuId;
+            double finalPrice = (double)product.Price.Value;
+            int finalQuantity = product.Quantity.Value;
+
+            if (hasVariants && item.SkuId.HasValue)
+            {
+                var matchingVariant = product.Variants!.FirstOrDefault(v => v.SkuId == item.SkuId.Value);
+
+                if (matchingVariant is null)
+                {
+                    throw new RpcException(new Status(
+                        StatusCode.InvalidArgument, 
+                        $"SKU '{item.SkuId.Value}' does not belong to Product '{item.ProductId}'."));
+                }
+
+                finalPrice = (double)matchingVariant.Price.Value;
+                finalQuantity = matchingVariant.Quantity.Value;
+            }
+            else if (!hasVariants && item.SkuId.HasValue)
+            {
+                finalSkuId = null;
+            }
+
+            var model = new ProductGrpcModel
+            {
+                ProductId = product.Id.ToString(),
+                SkuId = finalSkuId.HasValue ? finalSkuId.Value.ToString() : string.Empty,
+                Title = product.Title,
+                Price = finalPrice,
+                Quantity = finalQuantity,
+                SellerId = product.SellerId.ToString()
+            };
+
+            response.Products.Add(model);
+        }
 
         return response;
-    }
-
-    public override async Task<GetProductBySkuIdResponse> GetProductBySkuId(
-        GetProductBySkuIdRequest request, 
-        ServerCallContext context
-    )
-    {
-        if (!Guid.TryParse(request.SkuId, out var skuId))
-        {
-            throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid SKU ID format."));
-        }
-
-        var product = await _productRepository.GetBySkuIdAsync(skuId);
-        
-        if (product is null)
-        {
-            throw new RpcException(new Status(StatusCode.NotFound, "Product variant with specified SKU ID not found."));
-        }
-
-        var variant = product.Variants.First(v => v.SkuId == skuId);
-
-        return new GetProductBySkuIdResponse
-        {
-            ProductId = product.Id.ToString(),
-            SkuId = variant.SkuId.ToString(),
-            Title = $"{product.Title} ({string.Join(", ", variant.Attributes.Values)})",
-            Price = (double)variant.Price.Value,
-            Quantity = variant.Quantity.Value,
-            SellerId = product.SellerId.ToString()
-        };
     }
 }

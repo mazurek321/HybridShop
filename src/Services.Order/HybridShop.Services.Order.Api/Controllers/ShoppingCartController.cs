@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Grpc.Core;
 using BuildingBlocks.OpenApi.Context;
 using HybridShop.Services.Order.Application.Services;
 using HybridShop.Services.Order.Application.Exceptions;
 using HybridShop.Services.Order.Application.Dto;
+using HybridShop.Services.Order.Core.Exceptions;
 
 namespace HybridShop.Services.Order.Api.Controllers;
 
@@ -37,6 +39,18 @@ public class ShoppingCartController : ControllerBase
         {
             return NotFound(new { message = ex.Message });
         }
+        catch (RpcException ex) when (ex.StatusCode == global::Grpc.Core.StatusCode.NotFound)
+        {
+            return NotFound(new { message = ex.Status.Detail });
+        }
+        catch (RpcException ex) when (ex.StatusCode == global::Grpc.Core.StatusCode.InvalidArgument)
+        {
+            return BadRequest(new { message = ex.Status.Detail });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Wystąpił nieoczekiwany błąd serwera.", details = ex.Message });
+        }
     }
 
     [Authorize]
@@ -49,9 +63,28 @@ public class ShoppingCartController : ControllerBase
             await _shoppingCartService.AddItemToCartAsync(userId, dto, cancellationToken);
             return Ok();
         }
-        catch (InvalidQuantityException ex)
+        catch (ProductNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (RpcException ex) when (ex.StatusCode == global::Grpc.Core.StatusCode.NotFound)
+        {
+            return NotFound(new { message = ex.Status.Detail });
+        }
+        catch (RpcException ex) when (ex.StatusCode == global::Grpc.Core.StatusCode.InvalidArgument)
+        {
+            return BadRequest(new { message = ex.Status.Detail });
+        }
+        catch (Exception ex) when (
+            ex is Application.Exceptions.InvalidQuantityException ||
+            ex is InvalidPriceException ||
+            ex is ArgumentException)
         {
             return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Wystąpił nieoczekiwany błąd serwera.", details = ex.Message });
         }
     }
 
@@ -69,6 +102,10 @@ public class ShoppingCartController : ControllerBase
         {
             return NotFound(new { message = ex.Message });
         }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Wystąpił nieoczekiwany błąd serwera.", details = ex.Message });
+        }
     }
 
     [Authorize]
@@ -84,6 +121,10 @@ public class ShoppingCartController : ControllerBase
         catch (CartNotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Wystąpił nieoczekiwany błąd serwera.", details = ex.Message });
         }
     }
 
@@ -101,13 +142,30 @@ public class ShoppingCartController : ControllerBase
         {
             return NotFound(new { message = ex.Message });
         }
+        catch (Exception ex) when (
+            ex is InvalidDeliveryOptionException ||
+            ex is InvalidDeliveryTypeException)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Wystąpił nieoczekiwany błąd serwera.", details = ex.Message });
+        }
     }
 
     [Authorize]
     [HttpGet("delivery-options")]
     public async Task<IActionResult> GetDeliveryOptions()
     {
-        var options = await _shoppingCartService.GetAvailableDeliveryMethodsAsync();
-        return Ok(options);
+        try
+        {
+            var options = await _shoppingCartService.GetAvailableDeliveryMethodsAsync();
+            return Ok(options);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Wystąpił nieoczekiwany błąd serwera.", details = ex.Message });
+        }
     }
 }

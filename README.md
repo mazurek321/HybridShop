@@ -46,5 +46,29 @@ dotnet ef migrations add InitialPostgresOrderDb -s HybridShop.Services.Order.Api
 Infrastructure
 dotnet ef database update --startup-project ../HybridShop.Services.Order.Api/
 
-## logs:
-docker compose logs -f
+
+## Testowanie SignalR i powiadomień dla zamówień
+F12 -> console
+
+const token = "<token>";
+
+fetch('https://unpkg.com/@microsoft/signalr@8.0.0/dist/browser/signalr.min.js')
+  .then(response => response.text())
+  .then(code => {
+      new Function(code)();
+
+      const connection = new signalR.HubConnectionBuilder()
+          .withUrl("http://localhost:5000/hubs/notifications", {
+              accessTokenFactory: () => token
+          })
+          .build();
+
+      connection.on("ReceiveOrderNotification", (data) => {
+          console.log("🔥 [SIGNALR] NOWE ZAMÓWIENIE!", data);
+          alert(`Ktoś kupił Twój przedmiot!\nKupujący: ${data.buyerEmail}\nKwota: ${data.total} PLN`);
+      });
+
+      return connection.start();
+  })
+  .then(() => console.log("🚀 POŁĄCZONO Z SIGNALR! Czekam na zamówienia..."))
+  .catch(err => console.error("❌ Błąd:", err));

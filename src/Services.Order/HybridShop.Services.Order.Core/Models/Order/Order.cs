@@ -7,7 +7,6 @@ public class Order
     private Order(
         Guid id,
         Guid buyerId,
-        Guid sellerId,
         List<OrderItem> items,
         decimal deliveryPrice,
         string deliveryName,
@@ -19,7 +18,6 @@ public class Order
     {
         Id = id;
         BuyerId = buyerId;
-        SellerId = sellerId;
         Items = items;
         DeliveryPrice = deliveryPrice;
         DeliveryName = deliveryName;
@@ -32,7 +30,6 @@ public class Order
 
     public Guid Id { get; private set; }
     public Guid BuyerId { get; private set; }
-    public Guid SellerId { get; private set; }
     public List<OrderItem> Items { get; private set; } = new();
     public decimal DeliveryPrice { get; private set; }
     public string DeliveryName { get; private set; } = string.Empty;
@@ -44,7 +41,6 @@ public class Order
 
     public static Order Create(
         Guid buyerId,
-        Guid sellerId,
         List<OrderItem> items,
         decimal deliveryPrice,
         string deliveryName,
@@ -52,7 +48,7 @@ public class Order
     )
     {
         var total = items.Sum(i => i.Price * i.Quantity) + deliveryPrice;
-        return new Order(Guid.NewGuid(), buyerId, sellerId, items, deliveryPrice, deliveryName, total, shippingAddress, OrderStatus.Placed, DateTime.UtcNow);
+        return new Order(Guid.NewGuid(), buyerId, items, deliveryPrice, deliveryName, total, shippingAddress, OrderStatus.Placed, DateTime.UtcNow);
     }
 
     public void UpdateStatus(OrderStatus status)

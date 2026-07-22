@@ -5,6 +5,7 @@ using HybridShop.Services.Order.Application.Services;
 using HybridShop.Services.Order.Application.Dto;
 using HybridShop.Services.Order.Core.Models.Order;
 using HybridShop.Services.Order.Application.Exceptions;
+using HybridShop.Services.Order.Core.Exceptions;
 
 namespace HybridShop.Services.Order.Api.Controllers;
 
@@ -43,7 +44,8 @@ public class OrderController : ControllerBase
             ex is CartIsEmptyOrDoesntExistException ||
             ex is InvalidDeliveryAddressException ||
             ex is InvalidPriceException ||
-            ex is InvalidQuantityException)
+            ex is Application.Exceptions.InvalidQuantityException ||
+            ex is InvalidOperationException)
         {
             return BadRequest(new { message = ex.Message });
         }
@@ -67,6 +69,10 @@ public class OrderController : ControllerBase
         {
             return Forbid();
         }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Wystąpił nieoczekiwany błąd serwera.", details = ex.Message });
+        }
     }
 
     [Authorize]
@@ -83,11 +89,15 @@ public class OrderController : ControllerBase
         {
             return Forbid();
         }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Wystąpił nieoczekiwany błąd serwera.", details = ex.Message });
+        }
     }
 
     [Authorize]
-    [HttpPatch("{orderId:guid}/status")]
-    public async Task<IActionResult> UpdateStatus(Guid orderId, [FromBody] UpdateOrderStatusDto dto, CancellationToken cancellationToken)
+    [HttpPatch("{orderId:guid}/items/{orderItemId:guid}/status")]
+    public async Task<IActionResult> UpdateItemStatus(Guid orderId, Guid orderItemId, [FromBody] UpdateOrderStatusDto dto, CancellationToken cancellationToken)
     {
         try
         {
@@ -97,18 +107,25 @@ public class OrderController : ControllerBase
             }
 
             var currentUserId = _context.Id;
-            var isSeller = User.IsInRole("Seller");
 
-            await _orderService.UpdateOrderStatusAsync(orderId, (OrderStatus)dto.Status, currentUserId, isSeller, cancellationToken);
+            await _orderService.UpdateOrderItemStatusAsync(orderId, orderItemId, (OrderStatus)dto.Status, currentUserId, cancellationToken);
             return Ok();
         }
         catch (OrderNotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
         }
+        catch (OrderItemNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
         catch (UnauthorizedException)
         {
             return Forbid();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Wystąpił nieoczekiwany błąd serwera.", details = ex.Message });
         }
     }
 }

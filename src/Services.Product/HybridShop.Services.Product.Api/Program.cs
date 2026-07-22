@@ -3,9 +3,8 @@ using HybridShop.BuildingBlocks.OpenApi;
 using HybridShop.Services.Product.Application;
 using HybridShop.BuildingBlocks.OpenApi.Auth;
 using dotenv.net;
-using HybridShop.Services.Product.Api.Grpc;
 using HybridShop.Services.Product.Api.GraphQL;
-using Microsoft.AspNetCore.HttpOverrides;
+using HybridShop.Services.Product.Infrastructure.Grpc;
 
 string? currentDir = Directory.GetCurrentDirectory();
 string? envFilePath = null;
@@ -69,7 +68,7 @@ app.UseAuthorization();
 
 app.MapGraphQL("/graphql");
 
-app.MapGrpcService<ProductGrpcServer>();
+app.MapGrpcService<ProductGrpcServerService>();
 
 app.MapControllers();
 

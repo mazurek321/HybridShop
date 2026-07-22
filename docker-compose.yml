@@ -95,10 +95,12 @@ services:
       - Jwt__Issuer=${JWT_ISSUER}
       - Jwt__Audience=${JWT_AUDIENCE}
       - InternalServices__ProductGrpcUrl=${InternalServices__ProductGrpcUrl}
+      - InternalServices__AuthGrpcUrl=${InternalServices__AuthGrpcUrl}
     depends_on:
       - postgres
       - redis
       - rabbitmq
+      - auth-service
 
   notification-service:
     image: hybridshop-notification
@@ -108,8 +110,13 @@ services:
       dockerfile: src/Services.Notification/Dockerfile
     environment:
       - EventBus__HostName=rabbitmq
+      - Jwt__Key=${JWT_KEY}
+      - Jwt__Issuer=${JWT_ISSUER}
+      - Jwt__Audience=${JWT_AUDIENCE}
+      - InternalServices__AuthGrpcUrl=${InternalServices__AuthGrpcUrl}
     depends_on:
       - rabbitmq
+      - auth-service
 
 volumes:
   postgres_data:
