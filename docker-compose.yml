@@ -32,6 +32,13 @@ services:
       - "${PORT_RABBITMQ_AMQP}:5672"
       - "${PORT_RABBITMQ_MGMT}:15672"
 
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: hybridshop-mailpit
+    ports:
+      - "1025:1025" 
+      - "8025:8025" 
+
   api-gateway:
     image: hybridshop-gateway
     container_name: hybridshop-gateway
@@ -114,9 +121,13 @@ services:
       - Jwt__Issuer=${JWT_ISSUER}
       - Jwt__Audience=${JWT_AUDIENCE}
       - InternalServices__AuthGrpcUrl=${InternalServices__AuthGrpcUrl}
+      - Smtp__Host=mailpit
+      - Smtp__Port=1025
+      - Smtp__From=noreply@hybridshop.com
     depends_on:
       - rabbitmq
       - auth-service
+      - mailpit
 
 volumes:
   postgres_data:

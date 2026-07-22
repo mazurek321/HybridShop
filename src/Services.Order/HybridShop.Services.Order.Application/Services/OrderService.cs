@@ -1,10 +1,10 @@
+using System.Text.Json;
 using HybridShop.BuildingBlocks.EventBus.Events;
 using HybridShop.Services.Order.Application.Dto;
 using HybridShop.Services.Order.Application.Exceptions;
 using HybridShop.Services.Order.Core.Interfaces;
-using HybridShop.Services.Order.Core.Models.Dto;
 using HybridShop.Services.Order.Core.Models.Order;
-using MassTransit;
+using HybridShop.Services.Order.Core.Models.Outbox;
 
 namespace HybridShop.Services.Order.Application.Services;
 
@@ -12,23 +12,23 @@ public class OrderService
 {
     private readonly IShoppingCartRepository _cartRepository;
     private readonly IOrderRepository _orderRepository;
+    private readonly IOutboxRepository _outboxRepository;
     private readonly IProductServiceClient _productClient;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IPublishEndpoint _publishEndpoint;
 
     public OrderService(
         IShoppingCartRepository cartRepository,
         IOrderRepository orderRepository,
+        IOutboxRepository outboxRepository,
         IProductServiceClient productClient,
-        IUnitOfWork unitOfWork,
-        IPublishEndpoint publishEndpoint
+        IUnitOfWork unitOfWork
     )
     {
         _cartRepository = cartRepository;
         _orderRepository = orderRepository;
+        _outboxRepository = outboxRepository;
         _productClient = productClient;
         _unitOfWork = unitOfWork;
-        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<List<OrderDto>> CreateOrdersFromCartAsync(Guid userId, string buyerEmail, CreateOrderDto dto, CancellationToken cancellationToken = default)
@@ -106,6 +106,22 @@ public class OrderService
             foreach (var order in createdOrders)
             {
                 await _orderRepository.AddAsync(order, cancellationToken);
+
+                var sellerId = order.Items.First().SellerId;
+                var @event = new OrderCreatedEvent(
+                    order.Id,
+                    order.BuyerId,
+                    sellerId,
+                    buyerEmail,
+                    order.Total
+                );
+
+                var outboxMessage = new OutboxMessage(
+                    typeof(OrderCreatedEvent).AssemblyQualifiedName!,
+                    JsonSerializer.Serialize(@event)
+                );
+
+                await _outboxRepository.AddAsync(outboxMessage, cancellationToken);
             }
 
             await _unitOfWork.CommitTransactionAsync(cancellationToken);
@@ -114,18 +130,6 @@ public class OrderService
         {
             await _unitOfWork.RollbackTransactionAsync(cancellationToken);
             throw;
-        }
-
-        foreach (var order in createdOrders)
-        {
-            var sellerId = order.Items.First().SellerId;
-            await _publishEndpoint.Publish(new OrderCreatedEvent(
-                order.Id,
-                order.BuyerId,
-                sellerId,
-                buyerEmail,
-                order.Total
-            ), cancellationToken);
         }
 
         return createdOrders.Select(MapToDto).ToList();
