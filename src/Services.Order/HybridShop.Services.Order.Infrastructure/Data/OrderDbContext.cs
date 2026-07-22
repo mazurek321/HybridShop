@@ -1,3 +1,4 @@
+using HybridShop.Services.Order.Core.Models.Outbox;
 using Microsoft.EntityFrameworkCore;
 using OrderAggregate = HybridShop.Services.Order.Core.Models.Order.Order;
 
@@ -8,6 +9,7 @@ public class OrderDbContext : DbContext
     public OrderDbContext(DbContextOptions<OrderDbContext> options) : base(options) { }
 
     public DbSet<OrderAggregate> Orders => Set<OrderAggregate>();
+    public DbSet<OutboxMessage> OutboxMessages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

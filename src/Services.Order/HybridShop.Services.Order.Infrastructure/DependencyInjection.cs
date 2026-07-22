@@ -1,5 +1,6 @@
 using HybridShop.Grpc;
 using HybridShop.Services.Order.Core.Interfaces;
+using HybridShop.Services.Order.Infrastructure.BackgroundJobs;
 using HybridShop.Services.Order.Infrastructure.Clients;
 using HybridShop.Services.Order.Infrastructure.Repositories;
 using HybridShop.Services.Product.Grpc;
@@ -53,10 +54,13 @@ public static class DependencyInjection
             options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(15);
         });
 
+
         services.AddScoped<IShoppingCartRepository, RedisShoppingCartRepository>();
         services.AddScoped<IProductServiceClient, ProductServiceClient>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IOutboxRepository, OutboxRepository>();
+        services.AddHostedService<OutboxProcessor>();
 
         return services;
     }

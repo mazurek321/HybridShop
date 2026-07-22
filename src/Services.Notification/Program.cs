@@ -5,6 +5,7 @@ using HybridShop.Grpc;
 using HybridShop.BuildingBlocks.OpenApi;
 using HybridShop.BuildingBlocks.OpenApi.Auth;
 using HybridShop.Services.Notification.Hubs;
+using HybridShop.Services.Notification.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,6 +43,7 @@ builder.Services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationSch
 });
 
 builder.Services.AddSignalR();
+builder.Services.AddTransient<IEmailService, EmailService>();
 
 builder.Services.AddEventBus(builder.Configuration, x =>
 {
