@@ -1,38 +1,11 @@
-using HybridShop.Services.Product.Infrastructure;
 using HybridShop.BuildingBlocks.OpenApi;
-using HybridShop.Services.Product.Application;
 using HybridShop.BuildingBlocks.OpenApi.Auth;
-using dotenv.net;
 using HybridShop.Services.Product.Api.GraphQL;
+using HybridShop.Services.Product.Application;
+using HybridShop.Services.Product.Infrastructure;
 using HybridShop.Services.Product.Infrastructure.Grpc;
 
-string? currentDir = Directory.GetCurrentDirectory();
-string? envFilePath = null;
-
-while (currentDir != null)
-{
-    var potentialPath = System.IO.Path.Combine(currentDir, ".env");
-    if (File.Exists(potentialPath))
-    {
-        envFilePath = potentialPath;
-        break;
-    }
-    currentDir = Directory.GetParent(currentDir)?.FullName;
-}
-
-if (envFilePath != null)
-{
-    DotEnv.Load(options: new DotEnvOptions(envFilePaths: new[] { envFilePath }));
-    Console.WriteLine($"[Sukces] Załadowano plik .env z: {envFilePath}");
-}
-else
-{
-    Console.WriteLine("[Błąd] Nie znaleziono pliku .env w żadnym z katalogów nadrzędnych!");
-}
-
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Configuration.AddEnvironmentVariables();
 
 builder.WebHost.ConfigureKestrel(options =>
 {

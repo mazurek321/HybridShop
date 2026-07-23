@@ -2,6 +2,12 @@
   <Folder Name="/BuildingBlocks/">
     <Project Path="BuildingBlocks/OpenApi/OpenApi.csproj" />
   </Folder>
+  <Folder Name="/Services.Chat/">
+    <Project Path="src/Services.Chat/HybridShop.Services.Chat.Api/HybridShop.Services.Chat.Api.csproj" />
+    <Project Path="src/Services.Chat/HybridShop.Services.Chat.Application/HybridShop.Services.Chat.Application.csproj" />
+    <Project Path="src/Services.Chat/HybridShop.Services.Chat.Core/HybridShop.Services.Chat.Core.csproj" />
+    <Project Path="src/Services.Chat/HybridShop.Services.Chat.Infrastructure/HybridShop.Services.Chat.Infrastructure.csproj" />
+  </Folder>
   <Folder Name="/src/" />
   
   <Folder Name="/src/ApiGateway/">

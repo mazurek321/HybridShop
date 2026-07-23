@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HybridShop Chat Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #0f172a; color: #f8fafc; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 1100px; display: flex; flex-direction: column; gap: 20px; }
+        .card { background-color: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); }
+        h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; color: #38bdf8; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        label { font-size: 0.85rem; color: #94a3b8; font-weight: 500; }
+        input { background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 10px 14px; color: #f8fafc; font-size: 0.9rem; outline: none; }
+        input:focus { border-color: #38bdf8; }
+        button { background-color: #0284c7; color: white; border: none; border-radius: 6px; padding: 10px 16px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+        button:hover { background-color: #0369a1; }
+        .chat-app { display: grid; grid-template-columns: 320px 1fr; gap: 20px; min-height: 500px; }
+        .conversations-list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 440px; }
+        .conversation-item { background-color: #0f172a; border: 1px solid #334155; padding: 12px; border-radius: 8px; cursor: pointer; transition: border-color 0.2s; }
+        .conversation-item:hover, .conversation-item.active { border-color: #38bdf8; background-color: #1e293b; }
+        .conversation-item strong { display: block; font-size: 0.85rem; color: #e2e8f0; }
+        .conversation-item small { color: #64748b; font-size: 0.75rem; }
+        .chat-window { display: flex; flex-direction: column; justify-content: space-between; background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 15px; }
+        .messages-box { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; height: 380px; padding-right: 8px; }
+        .message { max-width: 70%; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; word-break: break-word; }
+        .message.sent { background-color: #0284c7; color: white; align-self: flex-end; }
+        .message.received { background-color: #334155; color: #f8fafc; align-self: flex-start; }
+        .message .time { font-size: 0.65rem; opacity: 0.7; display: block; margin-top: 4px; text-align: right; }
+        .send-box { display: flex; gap: 10px; margin-top: 15px; }
+        .send-box input { flex: 1; }
+        .status { font-size: 0.85rem; padding: 6px 12px; border-radius: 4px; display: inline-block; }
+        .status.connected { background-color: #14532d; color: #4ade80; }
+        .status.disconnected { background-color: #7f1d1d; color: #fca5a5; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <h2>🚀 SignalR Test Hub</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="form-group">
+                <label>URL Hub-a:</label>
+                <input type="text" id="hubUrl" value="http://localhost:5000/hubs/chat">
+            </div>
+            <div class="form-group">
+                <label>Token JWT:</label>
+                <input type="text" id="token" placeholder="Wklej token JWT...">
+            </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+            <button onclick="connect()">Połącz z SignalR</button>
+            <span id="status" class="status disconnected">Rozłączono</span>
+        </div>
+    </div>
+
+    <div class="card chat-app">
+        <div>
+            <h2>💬 Konwersacje</h2>
+            <div class="form-group" style="margin-bottom: 10px;">
+                <input type="text" id="newRecipientId" placeholder="Id odbiorcy (Guid)...">
+                <button onclick="startNewConversation()" style="margin-top: 6px; width: 100%;">Rozpocznij nową</button>
+            </div>
+            <div id="conversationsList" class="conversations-list">
+                <small style="color: #64748b;">Połącz się, aby pobrać listę...</small>
+            </div>
+        </div>
+
+        <div class="chat-window">
+            <div id="messagesBox" class="messages-box">
+                <small style="color: #64748b; text-align: center;">Wybierz konwersację z listy po lewej...</small>
+            </div>
+            <div class="send-box">
+                <input type="text" id="messageInput" placeholder="Napisz wiadomość..." disabled onkeypress="if(event.key === 'Enter') sendMessage()">
+                <button id="sendBtn" onclick="sendMessage()" disabled>Wyślij</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let connection = null;
+    let activeConversationId = null;
+    let activeReceiverId = null;
+
+    function getUrls() {
+        const fullHubUrl = document.getElementById('hubUrl').value.trim().replace(/\/$/, "");
+        const urlObj = new URL(fullHubUrl);
+        return {
+            hubUrl: fullHubUrl,
+            baseUrl: urlObj.origin
+        };
+    }
+
+    async function connect() {
+        const { hubUrl } = getUrls();
+        const token = document.getElementById('token').value.trim();
+
+        if (!token) {
+            alert('Wklej token JWT!');
+            return;
+        }
+
+        connection = new signalR.HubConnectionBuilder()
+            .withUrl(hubUrl, {
+                accessTokenFactory: () => token
+            })
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on("ReceiveMessage", (message) => {
+            if (message.conversationId === activeConversationId) {
+                appendMessage(message.content, 'received', message.createdAt);
+            }
+            loadConversations();
+        });
+
+        connection.on("MessageSent", (message) => {
+            if (message.conversationId === activeConversationId) {
+                appendMessage(message.content, 'sent', message.createdAt);
+            }
+            loadConversations();
+        });
+
+        try {
+            await connection.start();
+            document.getElementById('status').innerText = "Połączono";
+            document.getElementById('status').className = "status connected";
+
+            await loadConversations();
+        } catch (err) {
+            console.error(err);
+            document.getElementById('status').innerText = "Błąd połączenia";
+            document.getElementById('status').className = "status disconnected";
+        }
+    }
+
+    async function loadConversations() {
+        const { baseUrl } = getUrls();
+        const token = document.getElementById('token').value.trim();
+
+        try {
+            const res = await fetch(`${baseUrl}/api/chat/conversations`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (!res.ok) throw new Error("Błąd pobierania konwersacji");
+
+            const conversations = await res.json();
+            const listEl = document.getElementById('conversationsList');
+            listEl.innerHTML = '';
+
+            if (conversations.length === 0) {
+                listEl.innerHTML = '<small style="color: #64748b;">Brak konwersacji</small>';
+                return;
+            }
+
+            conversations.forEach(c => {
+                const item = document.createElement('div');
+                item.className = `conversation-item ${c.id === activeConversationId ? 'active' : ''}`;
+                item.onclick = () => selectConversation(c);
+                item.innerHTML = `
+                    <strong>👤 ${c.title || 'Użytkownik'}</strong>
+                    <small>Ostatnia: ${new Date(c.lastMessageAt).toLocaleTimeString()}</small>
+                `;
+                listEl.appendChild(item);
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function selectConversation(conversation) {
+        activeConversationId = conversation.id;
+        
+        const myToken = document.getElementById('token').value;
+        const payload = JSON.parse(atob(myToken.split('.')[1]));
+        const myId = payload.sub || payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+
+        activeReceiverId = (conversation.participantOneId === myId) 
+            ? conversation.participantTwoId 
+            : conversation.participantOneId;
+
+        document.getElementById('messageInput').disabled = false;
+        document.getElementById('sendBtn').disabled = false;
+
+        await loadMessages(conversation.id, myId);
+        await loadConversations();
+    }
+
+    async function loadMessages(conversationId, myId) {
+        const { baseUrl } = getUrls();
+        const token = document.getElementById('token').value.trim();
+
+        try {
+            const res = await fetch(`${baseUrl}/api/chat/conversations/${conversationId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            const messages = await res.json();
+            const box = document.getElementById('messagesBox');
+            box.innerHTML = '';
+
+            messages.reverse().forEach(m => {
+                const type = m.senderId === myId ? 'sent' : 'received';
+                appendMessage(m.content, type, m.createdAt);
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('messageInput');
+        const content = input.value.trim();
+
+        if (!content || !activeConversationId || !connection) return;
+
+        try {
+            await connection.invoke("SendMessage", activeConversationId, activeReceiverId, content);
+            input.value = '';
+        } catch (err) {
+            console.error(err);
+            alert("Błąd wysyłania wiadomości przez SignalR");
+        }
+    }
+
+    async function startNewConversation() {
+        const recipientId = document.getElementById('newRecipientId').value.trim();
+        const { baseUrl } = getUrls();
+        const token = document.getElementById('token').value.trim();
+
+        if (!recipientId) {
+            alert('Podaj ID odbiorcy');
+            return;
+        }
+
+        try {
+            const res = await fetch(`${baseUrl}/api/chat/conversations`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ recipientId })
+            });
+
+            const conversation = await res.json();
+            document.getElementById('newRecipientId').value = '';
+            await loadConversations();
+            selectConversation(conversation);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    function appendMessage(text, type, timestamp) {
+        const box = document.getElementById('messagesBox');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${type}`;
+        
+        const timeStr = timestamp ? new Date(timestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
+        msgDiv.innerHTML = `${text}<span class="time">${timeStr}</span>`;
+
+        box.appendChild(msgDiv);
+        box.scrollTop = box.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
