@@ -100,3 +100,23 @@ dotnet ef database update --startup-project ../HybridShop.Services.Order.Api/
 ```bash
 docker compose up -d --build
 ```
+
+## 🧪 Testowanie SignalR i WebSockets (Pliki HTML)
+
+W katalogu głównym projektu znajdują się dwa dedykowane pliki HTML do szybkiego testowania komunikacji w czasie rzeczywistym z poziomu przeglądarki:
+
+### 1. `testSignalR.html` – Powiadomienia na Żywo
+Służy do weryfikacji połączenia z `Notification Service` poprzez SignalR Hub.
+* **Adres połączenia:** `http://localhost:5000/hubs/notifications`
+* **Jak użyć:** 
+  1. Otwórz plik `testSignalR.html` w przeglądarce.
+  2. Wklej poprawny token JWT (uzyskany po zalogowaniu w Auth Service).
+  3. Połącz się z Hubem – po zarejestrowaniu użytkownika lub złożeniu zamówienia powiadomienia w czasie rzeczywistym pojawią się w oknie logów.
+
+### 2. `testChat.html` – Czat i Komunikacja WebSocket
+Służy do testowania wysyłania i odbierania wiadomości w czasie rzeczywistym w `Chat Service`.
+* **Adres połączenia:** `http://localhost:5000/hubs/chat`
+* **Jak użyć:**
+  1. Otwórz plik `testChat.html` w dwóch osobnych kartach lub okienkach przeglądarki.
+  2. Podaj tokeny JWT dwóch różnych użytkowników oraz wspólne `ConversationId`.
+  3. Przeprowadź rozmowę na żywo – wiadomości będą przesyłane natychmiastowo przez WebSockets i zapisywane w bazie MongoDB.
