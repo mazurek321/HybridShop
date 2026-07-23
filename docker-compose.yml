@@ -83,6 +83,7 @@ services:
       - product-service
       - order-service
       - notification-service
+      - chat-service
 
   auth-service:
     image: hybridshop-auth
@@ -164,6 +165,23 @@ services:
       - rabbitmq
       - auth-service
       - mailpit
+
+  chat-service:
+    image: hybridshop-chat
+    container_name: hybridshop-chat
+    build:
+      context: .
+      dockerfile: src/Services.Chat/Dockerfile
+    environment:
+      - ConnectionStrings__Mongo=${MONGO_CONNECTION_STRING}
+      - ConnectionStrings__Redis=${REDIS_CONNECTION_STRING}
+      - Jwt__Key=${JWT_KEY}
+      - Jwt__Issuer=${JWT_ISSUER}
+      - Jwt__Audience=${JWT_AUDIENCE}
+    depends_on:
+      - mongo
+      - redis
+      - auth-service
 
 volumes:
   postgres_data:
