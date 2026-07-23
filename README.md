@@ -120,3 +120,14 @@ Służy do testowania wysyłania i odbierania wiadomości w czasie rzeczywistym 
   1. Otwórz plik `testChat.html` w dwóch osobnych kartach lub okienkach przeglądarki.
   2. Podaj tokeny JWT dwóch różnych użytkowników oraz wspólne `ConversationId`.
   3. Przeprowadź rozmowę na żywo – wiadomości będą przesyłane natychmiastowo przez WebSockets i zapisywane w bazie MongoDB.
+
+## 🖥️ Dostępne Dashboardy i Interfejsy
+Swagger UI (OpenAPI): http://localhost:5000/swagger
+
+GraphQL (Banana Cake Pop): http://localhost:5000/graphql/
+
+RabbitMQ Management: http://localhost:15672
+
+MinIO Console: http://localhost:9001
+
+Mailpit (Podgląd E-mail): http://localhost:8025
